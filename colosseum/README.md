@@ -216,6 +216,9 @@ uv run python experiments/agent_misalignment/run.py \
 
 ## Matched A–E multi-seed launch
 
+See the prospective [experiment plan](../EXPERIMENT_PLAN.md) for scope, proposed
+metrics/comparisons, failure handling and the pre-launch checklist.
+
 The [A–E wrapper](../results/AE_RUNNER.md) runs every configured seed, saves a
 separate batch manifest and frozen input configs, and preserves native per-seed
 outputs. Preview the current plan from the repository root without model calls:

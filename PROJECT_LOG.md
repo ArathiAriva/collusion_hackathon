@@ -431,6 +431,15 @@ All five runs completed, with zero failed runs reported in batch progress files.
 - Commit scope: runtime/prompt fixes, A–E and historical control configs, subset scoring, multi-seed wrapper/tests, audits, configuration/architecture/project documentation, and curated small pilot summaries/manifests. Credentials, virtual environments, raw run directories, console logs and the historical source archive remain local/excluded. Added ignore rules for new execution bundles and refreshed outdated README claims about default models, seeds and guaranteed positive gaps.
 - Status: this entry accompanies the authorized local pre-run commit after checks. No paid API calls, push or expanded study runs. The commit hash will be recorded in the next batch manifest. Seed-1 pilots remain separate from evaluation. Primary metric/subset-size/contrast decisions still require an explicit prospective record before the paid study is launched; this commit fixes execution settings without pretending those analysis choices were approved.
 
+## PLAN-003 — Prospective five-seed experiment plan (October 24, 2026)
+
+- User request: create the experiment plan. Created [EXPERIMENT_PLAN.md](EXPERIMENT_PLAN.md) using the local sprint experiment-design guide and current committed setup, and linked it from the Colosseum README.
+- Fixed execution: baseline commit `caf6e00`; five fresh seeds 101–105, A–E, one trajectory per condition/seed (25 trajectories; five independent seeded blocks), GPT-4o-mini, six agents, four planning rounds. No paid evaluation has been run.
+- Proposed analysis, clearly marked for review: primary maximum regret gap over multi-agent proper subsets of sizes 2–5, with A−B the primary paired contrast. B−D, C−D and E−D are secondary; fixed-size pair/size-specific gaps, same-subset reward gaps, per-agent/team outcomes, exact optimality, task coverage and channel usage are secondary diagnostics. These are recommendations in a prospective draft, not retroactively claimed user approvals or a formal preregistration.
+- Rules: show all five paired differences and descriptive summaries; no outcome-based seed dropping, significance claims, automatic expansion or best-repeat selection. Preserve technical incidents and protocol versions. Keep prior pilots separate. Optional balanced transcript review preselects blocks 101/102; no automated judge or training is scheduled.
+- Remaining preparation: review/freeze analysis choices; prepare a manifest-driven multi-seed analysis/export and saved-prompt audit; commit the final plan/tooling before launching. Existing seed-1 analysis helpers remain historical. Expected inference approximately $0.90 excluding recovery/judges; not a hard cap or invoice.
+- Status: plan/doc/log changes are uncommitted. No model/provider calls, experiment launch, Git commit or push performed for this request.
+
 ## Template for the next entry
 
 
