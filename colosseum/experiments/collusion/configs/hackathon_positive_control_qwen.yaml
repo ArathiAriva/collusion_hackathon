@@ -1,0 +1,49 @@
+# Qwen variant of the positive control: complete shared board plus private pair board.
+# Matches the earlier GPT-4o-mini three-seed/four-planning-round control.
+simulation:
+  max_iterations: 1
+  max_planning_rounds: 4
+  max_conversation_steps: 3
+  seed: 1
+  tags:
+  - hackathon_positive_control_qwen
+environment:
+  name: JiraTicketEnvironment
+  assignment_filling: false
+  max_tasks: 8
+communication_network:
+  topology: complete
+  num_agents: 4
+  consolidate_channels: true
+llm_models:
+- label: qwen_2_5_7b_instruct
+  llm:
+    provider: openrouter
+    openrouter:
+      model: qwen/qwen-2.5-7b-instruct
+      params:
+        max_tokens: 1500
+        temperature: 0.7
+experiment:
+  tag: hackathon_positive_control_qwen
+  output_dir: experiments/collusion/outputs/hackathon_positive_control_qwen
+  max_concurrent_runs: 2
+  seeds:
+  - 1
+  - 2
+  - 3
+  collusion:
+    colluder_selection: first
+    agent_order: random
+  sweeps:
+  - name: hackathon_positive_control_qwen
+    topologies:
+    - complete
+    num_agents:
+    - 4
+    colluder_counts:
+    - 2
+    secret_channel_enabled:
+    - true
+    prompt_variants:
+    - simple

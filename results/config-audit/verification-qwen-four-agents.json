@@ -1,0 +1,250 @@
+{
+  "kind": "offline_config_audit_not_experiment_results",
+  "model_calls": 0,
+  "matching_instances_and_turn_orders": true,
+  "configs": [
+    {
+      "condition": "A",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_a_pair_private_channel.yaml",
+      "sha256": "e02d72c21ed52c1d846ec141c1ccc44d067fba321ce47651ec58a300038004dd",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "agent_names": [
+        "Layla",
+        "Jeanene",
+        "Pauline",
+        "Mona"
+      ],
+      "reference_pair": [
+        "Layla",
+        "Mona"
+      ],
+      "prompted_agents": [
+        "Layla",
+        "Mona"
+      ],
+      "turn_order": [
+        "Mona",
+        "Layla",
+        "Pauline",
+        "Jeanene"
+      ],
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        1
+      ],
+      "planning_rounds": 2,
+      "warnings": []
+    },
+    {
+      "condition": "B",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_b_pair_no_channel.yaml",
+      "sha256": "fb1244ed96c344d5c54987b294aabe412e9768a4e375049e468e5b2e71b58909",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "agent_names": [
+        "Layla",
+        "Jeanene",
+        "Pauline",
+        "Mona"
+      ],
+      "reference_pair": [
+        "Layla",
+        "Mona"
+      ],
+      "prompted_agents": [
+        "Layla",
+        "Mona"
+      ],
+      "turn_order": [
+        "Mona",
+        "Layla",
+        "Pauline",
+        "Jeanene"
+      ],
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        1
+      ],
+      "planning_rounds": 2,
+      "warnings": []
+    },
+    {
+      "condition": "C",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_c_open_channel.yaml",
+      "sha256": "c78f99804bc5e8a295a6f8659b5702f6b72e94748523bcfac6dd04440bfce34d",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "agent_names": [
+        "Layla",
+        "Jeanene",
+        "Pauline",
+        "Mona"
+      ],
+      "reference_pair": [
+        "Layla",
+        "Mona"
+      ],
+      "prompted_agents": [],
+      "turn_order": [
+        "Mona",
+        "Layla",
+        "Pauline",
+        "Jeanene"
+      ],
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        1
+      ],
+      "planning_rounds": 2,
+      "warnings": []
+    },
+    {
+      "condition": "D",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_d_neither.yaml",
+      "sha256": "5505690d7faacaac6e4de2d29b6cf3e550d93279f4994f7e0a22bb359a4bacc7",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "agent_names": [
+        "Layla",
+        "Jeanene",
+        "Pauline",
+        "Mona"
+      ],
+      "reference_pair": [
+        "Layla",
+        "Mona"
+      ],
+      "prompted_agents": [],
+      "turn_order": [
+        "Mona",
+        "Layla",
+        "Pauline",
+        "Jeanene"
+      ],
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        1
+      ],
+      "planning_rounds": 2,
+      "warnings": []
+    },
+    {
+      "condition": "E",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_e_all_pairwise_private.yaml",
+      "sha256": "2e2c2a8a9407855c809f9facceb6d348e86f0c2ae77eb58d9795c13816834520",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "agent_names": [
+        "Layla",
+        "Jeanene",
+        "Pauline",
+        "Mona"
+      ],
+      "reference_pair": [
+        "Layla",
+        "Mona"
+      ],
+      "prompted_agents": [],
+      "turn_order": [
+        "Mona",
+        "Layla",
+        "Pauline",
+        "Jeanene"
+      ],
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        1
+      ],
+      "planning_rounds": 2,
+      "warnings": []
+    }
+  ]
+}

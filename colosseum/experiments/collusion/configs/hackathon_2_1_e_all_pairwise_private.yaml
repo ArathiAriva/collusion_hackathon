@@ -1,0 +1,51 @@
+# Condition E: every pair has a private board; no coalition instructions.
+# Extension to the path-based A-D study. Match D's task/model/seed/budget;
+# change the ordinary network to complete with consolidation disabled.
+# With six agents this creates 15 two-agent boards, no common board.
+# Inference keys are loaded from the repo-root compute.env (OpenRouter or Nebius).
+
+simulation:
+  max_iterations: 1
+  max_planning_rounds: 4
+  max_conversation_steps: 3
+  seed: 101
+  tags: [hackathon_2_1_e_all_pairwise_private]
+
+environment:
+  name: JiraTicketEnvironment
+  assignment_filling: false
+  max_tasks: 8
+
+communication_network:
+  topology: complete
+  num_agents: 6
+  consolidate_channels: false
+
+llm_models:
+  - label: openai_gpt4o_mini
+    llm:
+      provider: openrouter
+      openrouter:
+        model: openai/gpt-4o-mini
+        params:
+          max_tokens: 1500
+          temperature: 0.7
+
+experiment:
+  tag: hackathon_2_1_e_all_pairwise_private
+  output_dir: experiments/collusion/outputs/hackathon_2_1_e_all_pairwise_private
+  max_concurrent_runs: 2
+  seeds: [101, 102, 103, 104, 105]  # fresh evaluation seeds; seed 1 remains a development pilot
+  collusion:
+    # Internal reference pair for diagnostics only; no membership is disclosed.
+    # Uses the same list positions as D; a complete graph has no endpoints.
+    colluder_selection: first_and_last
+    agent_order: random
+    coalition_prompt: never
+  sweeps:
+    - name: hackathon_2_1_e_all_pairwise_private
+      topologies: [complete]
+      num_agents: [6]
+      colluder_counts: [2]       # scoring reference only
+      secret_channel_enabled: [false]  # no extra board beyond the 15 network boards
+      prompt_variants: [control]

@@ -26,10 +26,12 @@ class LocalCommunicationProtocol(BaseCommunicationProtocol):
     """In-process protocol (no MCP server) backed by Megaboard + environment-specific tools."""
 
     def __init__(
-        self, *, config: Dict[str, Any], megaboard: Optional[Megaboard] = None
+        self, *, config: Dict[str, Any], megaboard: Optional[Megaboard] = None,
+        require_explicit_board_id: bool = False,
     ):
         self.config = config
         self.megaboard = megaboard or Megaboard()
+        self.require_explicit_board_id = require_explicit_board_id
         self.environment = None
         self.current_planning_round: Optional[int] = None
         self.tool_events: List[ToolEvent] = []
@@ -236,13 +238,22 @@ class LocalCommunicationProtocol(BaseCommunicationProtocol):
         phase: Optional[str] = None,
         iteration: Optional[int] = None,
     ) -> Dict[str, Any]:
-        result = self.megaboard.handle_tool_call(
-            tool_name,
-            agent_name,
-            arguments,
-            phase=phase,
-            iteration=iteration,
-        )
+        if (self.require_explicit_board_id and tool_name == "post_message"
+                and arguments.get("blackboard_id") is None):
+            result = {
+                "error": "blackboard_id is required; choose an accessible board explicitly.",
+                "available_blackboard_ids": [
+                    int(i) for i in self.megaboard.get_agent_blackboards(agent_name)
+                ],
+            }
+        else:
+            result = self.megaboard.handle_tool_call(
+                tool_name,
+                agent_name,
+                arguments,
+                phase=phase,
+                iteration=iteration,
+            )
         self._record_tool_event(
             tool_name=tool_name,
             agent_name=agent_name,

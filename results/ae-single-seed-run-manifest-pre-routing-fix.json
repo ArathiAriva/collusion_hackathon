@@ -1,0 +1,12 @@
+[
+  {
+    "config": "experiments/collusion/configs/hackathon_2_1_a_pair_private_channel.yaml",
+    "output": "experiments/collusion/outputs/hackathon_2_1_a_pair_private/20261023-225321",
+    "technical_status": "completed_but_communication_routing_invalid"
+  },
+  {
+    "config": "experiments/collusion/configs/hackathon_2_1_b_pair_no_channel.yaml",
+    "output": "experiments/collusion/outputs/hackathon_2_1_b_pair_no_channel/20261023-225557",
+    "technical_status": "interrupted_during_planning_for_routing_fix"
+  }
+]

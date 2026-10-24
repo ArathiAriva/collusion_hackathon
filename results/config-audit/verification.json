@@ -1,0 +1,365 @@
+{
+  "kind": "offline_config_audit_not_experiment_results",
+  "model_calls": 0,
+  "matching_instances_and_turn_orders": true,
+  "configs": [
+    {
+      "condition": "A",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_a_pair_private_channel.yaml",
+      "sha256": "90cd7966c29d67574b052de94734b10dc22b9b3b5238f7bb5024d7b89f573338",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "agent_names": [
+        "Nichelle",
+        "Paris",
+        "Cinthia",
+        "Tiana",
+        "Merissa",
+        "Aldo"
+      ],
+      "reference_pair": [
+        "Nichelle",
+        "Aldo"
+      ],
+      "prompted_agents": [
+        "Aldo",
+        "Nichelle"
+      ],
+      "turn_order": [
+        "Tiana",
+        "Nichelle",
+        "Aldo",
+        "Cinthia",
+        "Paris",
+        "Merissa"
+      ],
+      "model": "openai/gpt-4o-mini",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "setup_seed_audited": 101,
+      "planning_rounds": 4,
+      "warnings": []
+    },
+    {
+      "condition": "B",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_b_pair_no_channel.yaml",
+      "sha256": "25a8edc17afa630ea9d508cf8a1652aa51ee5ea43212bbaf3c273274e8a28307",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "agent_names": [
+        "Nichelle",
+        "Paris",
+        "Cinthia",
+        "Tiana",
+        "Merissa",
+        "Aldo"
+      ],
+      "reference_pair": [
+        "Nichelle",
+        "Aldo"
+      ],
+      "prompted_agents": [
+        "Aldo",
+        "Nichelle"
+      ],
+      "turn_order": [
+        "Tiana",
+        "Nichelle",
+        "Aldo",
+        "Cinthia",
+        "Paris",
+        "Merissa"
+      ],
+      "model": "openai/gpt-4o-mini",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "setup_seed_audited": 101,
+      "planning_rounds": 4,
+      "warnings": []
+    },
+    {
+      "condition": "C",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_c_open_channel.yaml",
+      "sha256": "45b18cd593535faf5387635ab948dcd8a7576674803ab0fbe033192b304588fa",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "agent_names": [
+        "Nichelle",
+        "Paris",
+        "Cinthia",
+        "Tiana",
+        "Merissa",
+        "Aldo"
+      ],
+      "reference_pair": [
+        "Nichelle",
+        "Aldo"
+      ],
+      "prompted_agents": [],
+      "turn_order": [
+        "Tiana",
+        "Nichelle",
+        "Aldo",
+        "Cinthia",
+        "Paris",
+        "Merissa"
+      ],
+      "model": "openai/gpt-4o-mini",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "setup_seed_audited": 101,
+      "planning_rounds": 4,
+      "warnings": []
+    },
+    {
+      "condition": "D",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_d_neither.yaml",
+      "sha256": "f80df8b3c113aa8897595b1aaf66d9d273e9c38ad1577269f8b798685a4ea214",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "agent_names": [
+        "Nichelle",
+        "Paris",
+        "Cinthia",
+        "Tiana",
+        "Merissa",
+        "Aldo"
+      ],
+      "reference_pair": [
+        "Nichelle",
+        "Aldo"
+      ],
+      "prompted_agents": [],
+      "turn_order": [
+        "Tiana",
+        "Nichelle",
+        "Aldo",
+        "Cinthia",
+        "Paris",
+        "Merissa"
+      ],
+      "model": "openai/gpt-4o-mini",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "setup_seed_audited": 101,
+      "planning_rounds": 4,
+      "warnings": []
+    },
+    {
+      "condition": "E",
+      "config": "colosseum/experiments/collusion/configs/hackathon_2_1_e_all_pairwise_private.yaml",
+      "sha256": "b2039f422ac199fdd359cae14f2901794b5c4d6ed40625d623d126f90bb9cd33",
+      "boards_by_agent_position": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "agent_names": [
+        "Nichelle",
+        "Paris",
+        "Cinthia",
+        "Tiana",
+        "Merissa",
+        "Aldo"
+      ],
+      "reference_pair": [
+        "Nichelle",
+        "Aldo"
+      ],
+      "prompted_agents": [],
+      "turn_order": [
+        "Tiana",
+        "Nichelle",
+        "Aldo",
+        "Cinthia",
+        "Paris",
+        "Merissa"
+      ],
+      "model": "openai/gpt-4o-mini",
+      "model_label": "openai_gpt4o_mini",
+      "seeds": [
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "setup_seed_audited": 101,
+      "planning_rounds": 4,
+      "warnings": []
+    }
+  ]
+}

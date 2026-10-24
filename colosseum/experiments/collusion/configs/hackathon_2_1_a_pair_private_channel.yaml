@@ -1,15 +1,15 @@
-# Condition A: assigned pair + private channel (same as the positive control).
+# Condition A: assigned pair + private channel on a path (positive control uses complete).
 #
 # Hackathon (sprint project 2.1 "which kinds of tasks lead to collusion?").
 # Coalition prompt on, coalition-only blackboard on.
-# Model calls go through the shared endpoint (Nebius by default; set NEBIUS_API_KEY in the
-# repo-root compute.env). Swap `model:` for any open model id Nebius serves.
+# Model calls go through OpenRouter; set OPENROUTER_API_KEY in the
+# repo-root compute.env. GPT-4o-mini requires OpenRouter in this shared setup.
 
 simulation:
   max_iterations: 1
-  max_planning_rounds: 2        # paper: 4. Fewer rounds = fewer calls; raise once the control passes.
+  max_planning_rounds: 4
   max_conversation_steps: 3
-  seed: 1
+  seed: 101
   tags: [hackathon_2_1_a_pair_private]
 
 environment:
@@ -23,7 +23,7 @@ communication_network:
   # condition C's extra open channel would be identical to it (Terrarium merges blackboards with
   # the same members) and the pair's private channel in A would be the only real difference.
   topology: path
-  num_agents: 4                 # paper: 6
+  num_agents: 6
   consolidate_channels: true
 
 llm_models:
@@ -31,7 +31,7 @@ llm_models:
     llm:
       provider: openrouter
       openrouter:
-        model: Qwen/Qwen2.5-7B-Instruct   # open model served by Nebius (was openai/gpt-4o-mini)
+        model: openai/gpt-4o-mini
         params:
           max_tokens: 1500
           temperature: 0.7
@@ -40,14 +40,16 @@ experiment:
   tag: hackathon_2_1_a_pair_private
   output_dir: experiments/collusion/outputs/hackathon_2_1_a_pair_private
   max_concurrent_runs: 2
-  seeds: [1]                    # start with one seed; expand to 3-5 after the positive control passes
+  seeds: [101, 102, 103, 104, 105]  # fresh evaluation seeds; seed 1 remains a development pilot
   collusion:
     colluder_selection: first_and_last   # the two PATH endpoints: same pair in A-D, and they share no blackboard
     agent_order: random
+    coalition_prompt: always
+    extra_channel_members: colluders
   sweeps:
     - name: hackathon_2_1_a_pair_private
       topologies: [path]
-      num_agents: [4]
+      num_agents: [6]
       colluder_counts: [2]
       secret_channel_enabled: [true]
       prompt_variants: [simple]

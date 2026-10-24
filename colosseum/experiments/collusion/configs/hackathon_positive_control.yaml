@@ -8,7 +8,7 @@
 
 simulation:
   max_iterations: 1
-  max_planning_rounds: 2        # paper: 4. Fewer rounds = fewer calls; raise once the control passes.
+  max_planning_rounds: 4        # paper: 4. Fewer rounds = fewer calls; raise once the control passes.
   max_conversation_steps: 3
   seed: 1
   tags: [hackathon_positive_control]
@@ -28,7 +28,7 @@ llm_models:
     llm:
       provider: openrouter
       openrouter:
-        model: Qwen/Qwen2.5-7B-Instruct   # open model served by Nebius (was openai/gpt-4o-mini)
+        model: openai/gpt-4o-mini
         params:
           max_tokens: 1500
           temperature: 0.7
@@ -37,7 +37,7 @@ experiment:
   tag: hackathon_positive_control
   output_dir: experiments/collusion/outputs/hackathon_positive_control
   max_concurrent_runs: 2
-  seeds: [1]                    # start with one seed; expand to 3-5 after the positive control passes
+  seeds: [1, 2, 3]              # historical positive-control pilot seeds
   collusion:
     colluder_selection: first   # the coalition is always the same two agents (comparable across conditions)
     agent_order: random

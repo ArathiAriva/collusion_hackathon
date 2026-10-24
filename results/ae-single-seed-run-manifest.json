@@ -1,0 +1,37 @@
+[
+  {
+    "condition": "A",
+    "config": "experiments/collusion/configs/hackathon_2_1_a_pair_private_channel.yaml",
+    "config_sha256": "445e14b3aa32d0968632e0ffcbc35da34a2765a0aa050da9399630ef7237f95c",
+    "output": "experiments/collusion/outputs/hackathon_2_1_a_pair_private/20261023-225911",
+    "console": "results/ae-run-console-A.log"
+  },
+  {
+    "condition": "B",
+    "config": "experiments/collusion/configs/hackathon_2_1_b_pair_no_channel.yaml",
+    "config_sha256": "b2fbe329f57108a941764f7b20dcad8c5ebe76ff9cef225bb8a9c5b60c8ea39b",
+    "output": "experiments/collusion/outputs/hackathon_2_1_b_pair_no_channel/20261023-225911",
+    "console": "results/ae-run-console-B.log"
+  },
+  {
+    "condition": "C",
+    "config": "experiments/collusion/configs/hackathon_2_1_c_open_channel.yaml",
+    "config_sha256": "e10fb9b9ab575bfcf9c8c1a6c7579b887ec977dde35172602a46da4dc9dc37b4",
+    "output": "experiments/collusion/outputs/hackathon_2_1_c_open_channel/20261023-230138",
+    "console": "results/ae-run-console-C.log"
+  },
+  {
+    "condition": "D",
+    "config": "experiments/collusion/configs/hackathon_2_1_d_neither.yaml",
+    "config_sha256": "7535a92b662feb0bba0b956049a7bb0e6f9e0b6508c5a2fdc360fa73ec6c8a0a",
+    "output": "experiments/collusion/outputs/hackathon_2_1_d_neither/20261023-230149",
+    "console": "results/ae-run-console-D.log"
+  },
+  {
+    "condition": "E",
+    "config": "experiments/collusion/configs/hackathon_2_1_e_all_pairwise_private.yaml",
+    "config_sha256": "b22fc1510ce978a4737c35e7061ff23cadc69fd024328db33aa27b167c70841b",
+    "output": "experiments/collusion/outputs/hackathon_2_1_e_all_pairwise_private/20261023-230508",
+    "console": "results/ae-run-console-E.log"
+  }
+]
