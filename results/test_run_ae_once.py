@@ -67,7 +67,7 @@ class WrapperTests(unittest.TestCase):
             td = Path(name)
             directory, originals = self.fixtures(td)
             fixture_bytes = {p.resolve():p.read_bytes() for p in directory.iterdir()}
-            pilot = wrapper.ROOT / 'results/ae-single-seed-run-manifest.json'
+            pilot = wrapper.ROOT / 'results/single-seed/ae-single-seed-run-manifest.json'
             pilot_bytes = pilot.read_bytes()
             runtime = {p:p.read_bytes() for p in [wrapper.PROJECT / 'experiments/collusion/run.py',
                                                  wrapper.PROJECT / 'experiments/collusion/prompts.py']}

@@ -18,7 +18,7 @@ from experiments.collusion.compute_jira_optimal import (
 
 
 def main():
-    manifest=json.loads((ROOT/'results/ae-single-seed-run-manifest.json').read_text())
+    manifest=json.loads((ROOT/'results/single-seed/ae-single-seed-run-manifest.json').read_text())
     summaries=[];all_subsets=[];instances=[];turn_orders=[]
     for item in manifest:
         batch=ROOT/'colosseum'/item['output']
@@ -108,9 +108,9 @@ def main():
     result={'kind':'one_matched_seed_block_descriptive_results',
             'matched_tasks_costs_and_turn_order':True,'num_conditions':len(summaries),
             'conditions':summaries}
-    dest=ROOT/'results/ae-single-seed-results.json'
+    dest=ROOT/'results/single-seed/ae-single-seed-results.json'
     dest.write_text(json.dumps(result,indent=2)+'\n')
-    with (ROOT/'results/ae-single-seed-subsets.csv').open('w',newline='') as f:
+    with (ROOT/'results/single-seed/ae-single-seed-subsets.csv').open('w',newline='') as f:
         writer=csv.DictWriter(f,fieldnames=list(all_subsets[0]),lineterminator="\n");writer.writeheader()
         writer.writerows({k:json.dumps(v) if isinstance(v,list) else v for k,v in row.items()} for row in all_subsets)
     for s in summaries:

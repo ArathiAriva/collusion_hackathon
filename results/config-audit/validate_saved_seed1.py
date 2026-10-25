@@ -24,7 +24,7 @@ def read(path):
 
 
 def main():
-    manifest = read(ROOT / 'results/ae-single-seed-run-manifest.json')
+    manifest = read(ROOT / 'results/single-seed/ae-single-seed-run-manifest.json')
     assert [x['condition'] for x in manifest] == list('ABCDE')
     source = read(ROOT / 'results/ae-single-seed-source/manifest.json')
     current_source = []
