@@ -240,6 +240,8 @@ score all proper subsets and preserve transcripts/native output layout. They
 pass `-y` to the native runner, so paid commands do not prompt again. See the guide
 for setup, pilots, artifact locations and no-network tests.
 
+The earlier [interior path-placement A/B follow-up](experiments/collusion/configs/interior_placement/README.md) has its own launcher in `scripts/path_placement/` and remains a separate experiment.
+
 ## Outputs
 
 Results land in `experiments/collusion/outputs/<tag>/<timestamp>/`, where `<tag>` is set by the

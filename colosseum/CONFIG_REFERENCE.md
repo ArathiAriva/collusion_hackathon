@@ -260,3 +260,14 @@ group's favorable outcome establishes coordination or collusion by itself.
 
 When changing the study settings, update this guide's current-value tables and
 record the change in the project log. Preserve original run snapshots.
+
+## Interior-placement follow-up
+
+The collusion runner supports `communication_network.path_order`:
+
+- `original` (default): preserve the environment agent list when constructing the network.
+- `swap_endpoints_inward`: path only, at least four agents; swap the first two and last two network vertices. With six agents the same endpoint identities move to positions 2 and 5.
+
+This changes network construction only. Coalition selection still uses the original environment list; `first_and_last` therefore retains the same coalition identities. Execution order and task generation are unchanged. `run_config.json` records both the network order and the separate execution order. This option is implemented by `experiments.collusion.run`, not by every Terrarium runner.
+
+The original A–E configs retain the default. The separate [A/B follow-up configs and run instructions](experiments/collusion/configs/interior_placement/README.md) use the inward swap and seeds 101–105.

@@ -199,8 +199,8 @@ def _select_colluders(
     if strategy == "first":
         return [str(x) for x in list(agent_names)[:count]]
     if strategy in {"first_and_last", "endpoints"}:
-        # Hackathon: on a `path` topology the first and last agents are the two endpoints, i.e.
-        # the pair that shares NO blackboard, so a coalition-only channel is genuinely new.
+        # Select identities from the original environment list, independently of path_order.
+        # With the default path order this selects the two network endpoints.
         names = [str(x) for x in agent_names]
         picked = [names[0], names[-1]] if len(names) >= 2 else names
         for n in names[1:-1]:
@@ -209,6 +209,22 @@ def _select_colluders(
             picked.append(n)
         return picked[:count]
     raise ValueError(f"Unknown colluder selection strategy: {strategy!r}")
+
+def _network_agent_order(agent_names: Sequence[str], config: Dict[str, Any]) -> List[str]:
+    """Reorder network vertices only; preserve identities, selection and turn RNG."""
+    names = list(agent_names)
+    network_cfg = config.get("communication_network") or {}
+    order = network_cfg.get("path_order", "original")
+    if order == "original":
+        return names
+    if order != "swap_endpoints_inward":
+        raise ValueError(f"Unknown communication_network.path_order: {order!r}")
+    if network_cfg.get("topology") != "path" or len(names) < 4:
+        raise ValueError("swap_endpoints_inward requires a path with at least four agents")
+    names[0], names[1] = names[1], names[0]
+    names[-1], names[-2] = names[-2], names[-1]
+    return names
+
 
 def _order_agent_turns(
     *,
@@ -364,7 +380,8 @@ async def _run_single(
     )
 
     agent_names = env.get_agent_names()
-    communication_network = build_communication_network(agent_names, cfg)
+    network_agent_order = _network_agent_order(agent_names, cfg)
+    communication_network = build_communication_network(network_agent_order, cfg)
     env.set_communication_network(communication_network)
 
     # Coalition membership + secret channel injection.
@@ -642,6 +659,8 @@ async def _run_single(
             "describe_global_boards_as_public": cfg.get("communication_network", {}).get(
                 "describe_global_boards_as_public", False
             ),
+            "path_order": cfg.get("communication_network", {}).get("path_order", "original"),
+            "network_agent_order": network_agent_order,
             "num_agents": num_agents,
             "colluder_count": colluder_count,
             "colluders": colluders,
