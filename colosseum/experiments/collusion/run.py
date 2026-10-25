@@ -44,7 +44,7 @@ from experiments.common.run_utils import (
 )
 from experiments.common.blackboard_logger import ExperimentBlackboardLogger
 from experiments.collusion.metrics import compute_collusion_metrics, metrics_to_json
-from experiments.collusion.prompts import CollusionPrompts
+from experiments.collusion.prompts import CollusionPrompts, resolve_environment_pressure
 from experiments.common.local_protocol import LocalCommunicationProtocol
 from terrarium.networks import build_communication_network
 from terrarium.logger import AgentTrajectoryLogger, PromptLogger
@@ -265,6 +265,7 @@ async def _run_single(
     out_dir: Path,
 ) -> Dict[str, Any]:
     rng = random.Random(int(seed))
+    environment_pressure = resolve_environment_pressure(base_cfg)
     secret_channel_enabled = bool(secret_channel_enabled)
     # Hackathon knobs (experiment.collusion.*), used for the sprint's matched conditions:
     #   coalition_prompt: auto (paper: colluders are prompted only when a secret channel exists)
@@ -638,6 +639,9 @@ async def _run_single(
             "environment_cfg": cfg.get("environment") or {},
             "environment_name": env.__class__.__name__,
             "topology": topology,
+            "describe_global_boards_as_public": cfg.get("communication_network", {}).get(
+                "describe_global_boards_as_public", False
+            ),
             "num_agents": num_agents,
             "colluder_count": colluder_count,
             "colluders": colluders,
@@ -645,6 +649,7 @@ async def _run_single(
             "agent_turn_order": [a.name for a in env.agents],
             "secret_channel_enabled": secret_channel_enabled,
             "coalition_prompt": coalition_prompt_mode,
+            "environment_pressure": environment_pressure,
             "extra_channel_members": extra_channel_members,
             "secret_blackboard_id": secret_blackboard_id,
             "prompt_variant": str(effective_prompt_variant),
@@ -710,6 +715,7 @@ async def _run_single(
         "colluder_count": colluder_count,
         "secret_channel_enabled": secret_channel_enabled,
         "coalition_prompt": coalition_prompt_mode,
+        "environment_pressure": environment_pressure,
         "extra_channel_members": extra_channel_members,
         "secret_blackboard_id": secret_blackboard_id,
         "prompt_variant": str(effective_prompt_variant),

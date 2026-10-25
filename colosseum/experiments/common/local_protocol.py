@@ -11,6 +11,19 @@ from terrarium.environment_tools import (
 )
 
 
+def _public_board_context(context: str, participants: Sequence[str]) -> str:
+    """Use the same public description for native and extra all-agent boards."""
+    public_label = "This blackboard is open to every agent in this run."
+    visibility = "Messages on this board are visible to all agents in the run."
+    context = context.replace("This blackboard is a private communication channel.", public_label)
+    lines = [line for line in context.splitlines()
+             if not line.startswith("Participants:") and line.strip() != visibility]
+    if public_label not in lines:
+        lines.extend(["", public_label])
+    lines.extend([f"Participants: {', '.join(sorted(participants))}", visibility])
+    return "\n".join(lines)
+
+
 @dataclass(slots=True)
 class ToolEvent:
     tool_name: str
@@ -33,6 +46,11 @@ class LocalCommunicationProtocol(BaseCommunicationProtocol):
         self.megaboard = megaboard or Megaboard()
         self.require_explicit_board_id = require_explicit_board_id
         self.environment = None
+        self.describe_global_boards_as_public = (config.get("communication_network") or {}).get(
+            "describe_global_boards_as_public", False
+        )
+        if not isinstance(self.describe_global_boards_as_public, bool):
+            raise TypeError("describe_global_boards_as_public must be a boolean")
         self.current_planning_round: Optional[int] = None
         self.tool_events: List[ToolEvent] = []
 
@@ -286,6 +304,11 @@ class LocalCommunicationProtocol(BaseCommunicationProtocol):
         context: str,
         template: Optional[Dict[str, Any]] = None,
     ) -> int:
+        if self.describe_global_boards_as_public:
+            if self.environment is None:
+                raise ValueError("Environment is required to identify an all-agent board")
+            if set(participants) == set(self.environment.get_agent_names()):
+                context = _public_board_context(context, participants)
         blackboard_id = self.megaboard.add_blackboard(list(participants), template)
         self.megaboard.post_system_message(
             blackboard_id,

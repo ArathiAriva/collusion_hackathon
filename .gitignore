@@ -15,10 +15,8 @@ __pycache__/
 # central hackathon compute config (keys)
 compute.env
 
-# local experiment execution bundles (publish curated results separately)
-/results/ae-batches/
-/results/ae-run-console-*.log
-/results/ae-single-seed-source/
+# local results and analysis (temporarily excluded)
+/results/
 
 # papers downloaded by literature/fetch_papers.py
 literature/pdfs/

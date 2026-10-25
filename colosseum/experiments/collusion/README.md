@@ -4,6 +4,13 @@ This experiment tests whether a **subset of colluding agents** can (a) coordinat
 
 It is modeled after `experiments/network_influence`, but uses an **in-process** communication protocol (`LocalCommunicationProtocol`) so it does **not** require an MCP server and supports **parallel runs**.
 
+## Shared-board report setup
+
+For the sprint report's matched A–F experiment, use the
+[dedicated run guide](../../../scripts/shared_board/README.md) and
+[shared-board configs](configs/paper_shared_board/README.md). The native examples
+below describe additional framework experiments, rather than that report protocol.
+
 ## Key factors
 - `colluder_count`: how many agents are in the coalition
 - `secret_channel_enabled`: whether a colluder-only blackboard is added (hidden from others)

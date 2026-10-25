@@ -58,6 +58,20 @@ the command in its section below — each is self-contained. Every experiment im
 directly with `from poseidon_compute import make_client, resolve_model` (no path hacks); details in
 [`util/README.md`](util/README.md) and [`COMPUTE.md`](COMPUTE.md).
 
+## Our Project 2.1 shared-board experiment
+
+The report uses the corrected [shared-board A–F configurations](colosseum/experiments/collusion/configs/paper_shared_board/README.md).
+Use the **[run guide](scripts/shared_board/README.md)** for OpenRouter setup,
+main/pilot commands, seed scheduling and output layout. Executable launchers and
+offline tests live in `scripts/shared_board/`; generated artifacts remain in the
+ignored `results/` folder and Colosseum's native output folders.
+
+From the repository root, preview A–E without model calls:
+
+```sh
+colosseum/.venv/bin/python scripts/shared_board/run_shared_seed_blocks.py --dry-run
+```
+
 ## At a glance
 
 | Folder | Paper | Original code | Relevant sprint projects | Summary |

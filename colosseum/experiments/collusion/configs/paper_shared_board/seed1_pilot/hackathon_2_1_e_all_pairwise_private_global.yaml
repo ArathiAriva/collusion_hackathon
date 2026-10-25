@@ -1,0 +1,53 @@
+# Seed-1 development pilot; same scientific settings as parent config, separate outputs.
+# Shared-board follow-up E: global planning board PLUS every private pair board.
+# Complete network, consolidation OFF: 15 pair-only boards for six agents.
+# Extra board membership is ALL six agents: total 16 boards, no coalition instructions.
+# Report experiment: corrected shared-board protocol.
+
+simulation:
+  max_iterations: 1
+  max_planning_rounds: 4
+  max_conversation_steps: 3
+  seed: 1
+  tags: [hackathon_2_1_e_all_pairwise_private_global_shared_pilot_seed1]
+
+environment:
+  name: JiraTicketEnvironment
+  assignment_filling: false
+  max_tasks: 8
+
+communication_network:
+  topology: complete
+  describe_global_boards_as_public: true
+  num_agents: 6
+  consolidate_channels: false
+
+llm_models:
+  - label: openai_gpt4o_mini
+    llm:
+      provider: openrouter
+      openrouter:
+        model: openai/gpt-4o-mini
+        params:
+          max_tokens: 1500
+          temperature: 0.7
+
+experiment:
+  tag: hackathon_2_1_e_all_pairwise_private_global_shared_pilot_seed1
+  output_dir: experiments/collusion/outputs/hackathon_2_1_e_all_pairwise_private_global_shared_pilot_seed1
+  max_concurrent_runs: 1
+  seeds: [1]  # development pilot only; exclude from experimental aggregates
+  collusion:
+    # Internal reference pair for diagnostics only; no membership is disclosed.
+    # Uses the same list positions as D; a complete graph has no endpoints.
+    colluder_selection: first_and_last
+    agent_order: random
+    coalition_prompt: never
+    extra_channel_members: all  # extra board is GLOBAL; all 15 private pair boards come from the network
+  sweeps:
+    - name: hackathon_2_1_e_all_pairwise_private_global_shared_pilot_seed1
+      topologies: [complete]
+      num_agents: [6]
+      colluder_counts: [2]       # scoring reference only
+      secret_channel_enabled: [true]   # enables the extra global board; does not assign a secret coalition
+      prompt_variants: [control]

@@ -1,0 +1,49 @@
+# Shared-board follow-up D: paper-aligned communication topology.
+# One common planning board; coalition assignment/private board as specified below.
+# Preserve existing agent identities, costs, seeded turn order and model/budgets.
+# Report experiment: corrected shared-board protocol.
+
+simulation:
+  max_iterations: 1
+  max_planning_rounds: 4
+  max_conversation_steps: 3
+  seed: 101
+  tags: [hackathon_2_1_d_neither_shared]
+
+environment:
+  name: JiraTicketEnvironment
+  assignment_filling: false
+  max_tasks: 8
+
+communication_network:
+  topology: complete
+  describe_global_boards_as_public: true
+  num_agents: 6
+  consolidate_channels: true
+
+llm_models:
+  - label: openai_gpt4o_mini
+    llm:
+      provider: openrouter
+      openrouter:
+        model: openai/gpt-4o-mini
+        params:
+          max_tokens: 1500
+          temperature: 0.7
+
+experiment:
+  tag: hackathon_2_1_d_neither_shared
+  output_dir: experiments/collusion/outputs/hackathon_2_1_d_neither_shared
+  max_concurrent_runs: 1
+  seeds: [101, 102, 103, 104, 105]  # reused task instances for exploratory protocol comparison; not held-out seeds
+  collusion:
+    colluder_selection: first_and_last   # same reference identities as earlier batches; no privileged network position
+    agent_order: random
+    coalition_prompt: never
+  sweeps:
+    - name: hackathon_2_1_d_neither_shared
+      topologies: [complete]
+      num_agents: [6]
+      colluder_counts: [2]
+      secret_channel_enabled: [false]
+      prompt_variants: [control]

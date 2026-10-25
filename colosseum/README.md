@@ -34,8 +34,9 @@ In the Collusion Research Sprint this covers:
 
 > **Fastest path:** from the repo root, `./setup.sh colosseum` sets this experiment up (deps + the shared `poseidon_compute` package) in one step; `./setup.sh` does all experiments. The manual steps below are equivalent.
 
-**Working dir:** run every command from `colosseum/` (`cd colosseum`) — the `experiments.*`
-module paths, config paths, and the `outputs/` tree all resolve relative to it.
+**Working dir:** run native Colosseum commands from `colosseum/` (`cd colosseum`) —
+the `experiments.*` module paths, config paths, and the `outputs/` tree resolve
+relative to it. The shared-board wrapper commands below run from the repository root.
 
 **Install and deps:**
 
@@ -214,22 +215,30 @@ uv run python experiments/agent_misalignment/run.py \
   --config experiments/agent_misalignment/configs/agent_misalignment_gpt_4_1_mini.yaml
 ```
 
-## Matched A–E multi-seed launch
+## Shared-board report experiment (A–F)
 
-See the prospective [experiment plan](../EXPERIMENT_PLAN.md) for scope, proposed
-metrics/comparisons, failure handling and the pre-launch checklist.
+Use the [shared-board run guide](../scripts/shared_board/README.md) for the actual
+report setup: one public board for all six agents, A–D objective/channel ablations,
+E universal private channels, and F's oversight notice. The original path configs
+above are an earlier protocol. Main seeds 101–105 are reused exploratory instances.
 
-The [A–E wrapper](../results/AE_RUNNER.md) runs every configured seed, saves a
-separate batch manifest and frozen input configs, and preserves native per-seed
-outputs. Preview the current plan from the repository root without model calls:
+Run these wrappers from the **repository root**, using the Colosseum interpreter:
 
-```bash
-colosseum/.venv/bin/python results/run_ae_once.py --dry-run
+```sh
+colosseum/.venv/bin/python scripts/shared_board/run_shared_seed_blocks.py --dry-run
+colosseum/.venv/bin/python scripts/shared_board/run_shared_seed_blocks.py \
+  --batch-id shared-board-reproduction-001
+colosseum/.venv/bin/python scripts/shared_board/run_f_seed_blocks.py \
+  --baseline-batch results/ae-batches/shared-board-reproduction-001 \
+  --batch-id f-oversight-reproduction-001
 ```
 
-It does not change the seed lists; all five YAML files use fresh evaluation seeds
-`[101, 102, 103, 104, 105]`, giving 25 trajectories total.
-See the wrapper guide for launch, scheduling, output layout and offline tests.
+Only the first command is offline. A–E run in parallel within each seed, then pass
+an audit barrier before the next seed. F runs serially against the completed A
+baseline. Every paid launch needs an unused batch ID. The wrappers automatically
+score all proper subsets and preserve transcripts/native output layout. They
+pass `-y` to the native runner, so paid commands do not prompt again. See the guide
+for setup, pilots, artifact locations and no-network tests.
 
 ## Outputs
 
