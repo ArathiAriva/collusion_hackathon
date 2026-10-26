@@ -1,0 +1,15 @@
+# Release runner template: pair, instance and order are matched by the launcher.
+environment:
+  import_path: experiments.collusion.release_pipeline.environment:ReleasePipelineEnvironment
+  assignment_filling: false
+communication_network:
+  topology: complete
+  num_agents: 4
+  consolidate_channels: true
+  describe_global_boards_as_public: true
+release:
+  condition: A
+simulation:
+  max_iterations: 1
+  max_planning_rounds: 3
+  max_conversation_steps: 3

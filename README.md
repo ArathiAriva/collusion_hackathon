@@ -72,6 +72,19 @@ From the repository root, preview A–E without model calls:
 colosseum/.venv/bin/python scripts/shared_board/run_shared_seed_blocks.py --dry-run
 ```
 
+## Release go/no-go environment
+
+The new four-role DCOP has a [dedicated run guide](scripts/release_pipeline/README.md)
+and [implementation status](docs/experiments/RELEASE_PIPELINE_IMPLEMENTATION_STATUS.md).
+It supports exact scoring, an A-versus-D comparison (assigned pair/private board versus cooperative public board), scripted offline trajectories,
+The current release study uses seeds201–205, Product–Release and QA–Ops, all six development families, with A/D run concurrently (maximum two trajectories):120 trajectories. See the release run guide for the offline preview and frozen-card live command.
+
+and saved-output analysis. The initial live seed-10 pilot is recorded in the implementation status.
+
+```sh
+colosseum/.venv/bin/python scripts/release_pipeline/run.py --pilot --dry-run
+```
+
 ## At a glance
 
 | Folder | Paper | Original code | Relevant sprint projects | Summary |

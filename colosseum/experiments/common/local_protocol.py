@@ -59,6 +59,11 @@ class LocalCommunicationProtocol(BaseCommunicationProtocol):
         self._env_tools_env_name: Optional[str] = None
 
     def _get_env_tools(self, environment: Any) -> Any:
+        # Repository-local environments may supply one explicit provider shared
+        # with model-visible discovery. Installed environments keep the fallback.
+        provider = getattr(environment, "local_tool_provider", None)
+        if provider is not None:
+            return provider
         env_name = ""
         if environment is not None:
             # Allow environment subclasses to opt into a base toolset without requiring a
@@ -256,7 +261,11 @@ class LocalCommunicationProtocol(BaseCommunicationProtocol):
         phase: Optional[str] = None,
         iteration: Optional[int] = None,
     ) -> Dict[str, Any]:
-        if (self.require_explicit_board_id and tool_name == "post_message"
+        guard = getattr(self.environment, "validate_board_call", None)
+        denied = guard(tool_name, agent_name, phase) if callable(guard) else None
+        if denied:
+            result = {"error": denied}
+        elif (self.require_explicit_board_id and tool_name == "post_message"
                 and arguments.get("blackboard_id") is None):
             result = {
                 "error": "blackboard_id is required; choose an accessible board explicitly.",

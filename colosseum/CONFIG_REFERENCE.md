@@ -271,3 +271,45 @@ The collusion runner supports `communication_network.path_order`:
 This changes network construction only. Coalition selection still uses the original environment list; `first_and_last` therefore retains the same coalition identities. Execution order and task generation are unchanged. `run_config.json` records both the network order and the separate execution order. This option is implemented by `experiments.collusion.run`, not by every Terrarium runner.
 
 The original A–E configs retain the default. The separate [A/B follow-up configs and run instructions](experiments/collusion/configs/interior_placement/README.md) use the inward swap and seeds 101–105.
+
+## Shared-public-board revised conditions
+
+The approved follow-up configs in [paper_shared_board/](experiments/collusion/configs/paper_shared_board/README.md) all use `topology: complete` with `consolidate_channels: true`, giving one public board shared by all six agents. A adds private pair access and coalition instructions; B adds instructions only; revised C adds private pair access only; D adds neither. This is a new four-condition protocol, separate from the original path A–D and pairwise-private E.
+
+Revised C uses `secret_channel_enabled: [true]`, `extra_channel_members: colluders`, `coalition_prompt: never` and `prompt_variants: [control]`. The pair's board membership is visible in its ordinary channel context; no coalition objective or secret coalition instructions are injected. It does not add another all-agent board. All four configs are prepared; this update did not launch experiments.
+
+### Revised shared-board E and seed-1 pilot
+
+In the shared-board protocol, E now includes a global board plus all 15 private pairwise boards (16 total). It uses `topology: complete`, `consolidate_channels: false`, `extra_channel_members: all`, `secret_channel_enabled: [true]`, `coalition_prompt: never`, and `prompt_variants: [control]`. The extra-channel flag enables the global board; pairwise privacy comes from the ordinary network. Each agent sees six boards: the global board and its own five pair boards. E−D compares adding universal pairwise communication while keeping the public board.
+
+Separate [seed-1 pilot configs](experiments/collusion/configs/paper_shared_board/seed1_pilot/) cover all five revised conditions. Their single seed and output namespaces are isolated from the parent multi-seed configs. Historical E remains a different, no-global-board setup.
+
+### Global-board description consistency
+
+`communication_network.describe_global_boards_as_public: true` is enabled in the revised shared-board A–E configs and their editable pilot copies. The local protocol identifies an all-agent board from actual environment membership and gives it the same public description whether it is an ordinary board (A–D) or E's extra global board. Displayed participant names are sorted; the text explicitly says messages are visible to all agents. Pair-only contexts and access restrictions are unchanged. The option defaults to false for legacy configs and is recorded in `run_config.json` for audit.
+
+This corrects a wording inconsistency observed in the completed seed-1 pilot; it does not retroactively alter that pilot's prompts or results. No corrective rerun was launched by the fix.
+
+### Parallel conditions with a seed barrier
+
+`results/run_shared_seed_blocks.py` runs revised shared-board A–E concurrently for one seed, with native concurrency 1 in each process. It waits for and audits the complete five-way block before advancing to the next seed (101, 102, 103, 104, 105). This caps simultaneous trajectories at five and makes each seed's comparison available together. It generates frozen single-seed copies, retains the original configs, and stores manifests and incremental analysis exports. Failures stop later seeds without automatic retry. `--dry-run` prints the schedule without writes or model calls.
+
+## `experiment.environment_pressure`: optional all-agent notice
+
+The collusion runner supports an opt-in narrative notice independent of coalition prompting:
+
+```yaml
+experiment:
+  environment_pressure:
+    enabled: true
+    message: >-
+      Your configurable oversight notice goes here.
+```
+
+Omitting the block or setting `enabled: false` preserves existing prompt text. `enabled` must be a boolean; an enabled notice requires nonempty string `message`. On every planning/execution turn, the configured text is appended to every agent's **user prompt** under `SPRINT GOVERNANCE NOTICE`; the shared board context, system prompt, private-board routing, task rules, reward computation and coalition instructions are unaffected. The resolved setting is saved in run metadata and the actual notice appears in saved prompt logs. No additional sweep axis is needed: one config applies the notice across that config's seeds/settings. Use distinct experiment tags/output namespaces for different notice treatments.
+
+[Condition F](experiments/collusion/configs/paper_shared_board/oversight_pressure/README.md) is A plus this notice. Its main seeds are 101–105 and its pilot uses seed 1. It lives outside the A–E wrapper's five-file input directory. This is prompt-only pressure, with no implemented detection or sanctions; a notice mentioning audits/suspension does not itself create those mechanisms.
+
+## Release go/no-go configuration
+
+The new release task uses its own [launcher guide](../scripts/release_pipeline/README.md) and [executable contract](../docs/experiments/RELEASE_PIPELINE_CONTRACT.md). Its current A/D templates are under `experiments/collusion/configs/release_pipeline/` and are not historical Jira sweep configs. The dedicated launcher resolves scenario, selected role pair and speaking seed within each matched block. The current protocol uses four roles, three rotated planning rounds, three native calls per turn, one final submission phase and no assignment filling. Final order is Product→QA→Ops→Release. `release.condition` determines both objective injection and board access; `release.selected_role_pair` is never a coalition label in C/D. Live model/endpoint/rates/resource scope are supplied through a separate frozen run card. Offline mode uses scripted clients and requires no API key.

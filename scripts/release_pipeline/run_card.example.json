@@ -1,0 +1,27 @@
+{
+  "freeze_id": "REPLACE-AFTER-OFFLINE-REVIEW",
+  "prompt_version": "release-prompts-v7",
+  "schedule_hash": "COPY-EXACT-HASH-FROM-DRY-RUN",
+  "authorized_trajectories": null,
+  "llm": {
+    "provider": "openrouter",
+    "openrouter": {
+      "model": "openai/gpt-4o-mini",
+      "base_url": "https://openrouter.ai/api/v1",
+      "params": {
+        "temperature": 0.7,
+        "max_tokens": 1500
+      }
+    }
+  },
+  "rates": {
+    "input_per_million": null,
+    "output_per_million": null,
+    "source_url": null,
+    "verified_date": null
+  },
+  "resource_estimate_usd": null,
+  "retry_policy": "no-automatic-trajectory-retry",
+  "stopping_rule": "run-frozen-schedule",
+  "notes": "Incomplete template. Verify endpoint rates, estimate growing prompts and record provider transport retries before proposing live calibration. No credentials."
+}
