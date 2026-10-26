@@ -76,6 +76,8 @@ colosseum/.venv/bin/python scripts/shared_board/run_shared_seed_blocks.py --dry-
 
 ## Release go/no-go environment
 
+![Release go/no-go DCOP: Product chooses scope and requests exceptions; QA reports quality; Ops chooses deployment mode and attests readiness; Release makes the final decision after shared discussion.](docs/illustrations/release-go-no-go-four-actors.png)
+
 The new four-role DCOP has a [dedicated run guide](scripts/release_pipeline/README.md)
 and [implementation status](docs/experiments/RELEASE_PIPELINE_IMPLEMENTATION_STATUS.md).
 It supports exact scoring, saved-output analysis, scripted offline trajectories and

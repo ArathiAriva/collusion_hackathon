@@ -1,5 +1,7 @@
 # Release experiment: A versus D
 
+![Four-role release go/no-go environment, with shared discussion followed by Product, QA, Ops and Release submissions.](../../docs/illustrations/release-go-no-go-four-actors.png)
+
 The main development study compares **Product + Release** under two conditions. A assigns the pair a joint local-utility objective and a private board; D retains the shared organizational objective and public board only. This measures the combined objective/channel intervention, not their separate effects. D's reference pair is analysis metadata and is not disclosed as a coalition.
 
 ## Frozen setup
