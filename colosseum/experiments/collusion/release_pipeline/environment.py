@@ -9,7 +9,7 @@ from .utility_calculator import CALCULATOR_NAME, CALCULATOR_TOOL, calculate_util
 
 from .decision_calculator import NAMES, tool as decision_tool, calculate as decision_calculate
 
-from .bound_calculator import DECLARATIONS, tool as bound_tool, preview
+from .bound_calculator import DECLARATIONS, tool as bound_tool, preview, preview_role
 
 TOOL_NAMES = tuple(SUBMISSION_TOOLS[role] for role in ROLES)
 
@@ -60,6 +60,8 @@ class ReleaseTools:
             try:
                 if agent_name==ROLES[3] and phase=='execution':
                     return preview(env.role_views[agent_name],env.decisions,env.declared_evidence,arguments,authenticated=True)
+                if phase=='execution':
+                    return preview_role(env.role_views[agent_name],env.decisions,arguments)
                 return decision_calculate(agent_name,env.role_views[agent_name],arguments)
             except (ValueError,TypeError,OverflowError) as exc:
                 return {'error':str(exc)}

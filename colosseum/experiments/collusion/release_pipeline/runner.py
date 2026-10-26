@@ -82,6 +82,7 @@ async def run_episode(config, scenario, out_dir, *, clients=None, scripted_assig
     release_cfg['prompt_version'] = PROMPT_VERSION
     release_cfg['utility_calculator_version'] = CALCULATOR_VERSION
     release_cfg['final_release_calculator_version']='bound-release-v2'
+    release_cfg['final_prior_binding_version']='role-decision-utility-v3-bound-prior'
     cfg.setdefault('environment',{})['scenario'] = scenario.to_dict()
     protocol = LocalCommunicationProtocol(config=cfg,require_explicit_board_id=True)
     env = ReleasePipelineEnvironment(protocol,cfg)

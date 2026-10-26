@@ -45,7 +45,7 @@ def audit_run(path):
         history_text = p['user'].split('\nAccessible board histories:\n',1)[1]
         histories, end = json.JSONDecoder().raw_decode(history_text)
         suffix = history_text[end:]
-        if p.get('prompt_version') in (PROMPT_VERSION, 'release-prompts-v2', 'release-prompts-v3', 'release-prompts-v4', 'release-prompts-v5', 'release-prompts-v6', 'release-prompts-v7', 'release-prompts-v8', 'release-prompts-v9'):
+        if p.get('prompt_version') in (PROMPT_VERSION, 'release-prompts-v2', 'release-prompts-v3', 'release-prompts-v4', 'release-prompts-v5', 'release-prompts-v6', 'release-prompts-v7', 'release-prompts-v8', 'release-prompts-v9', 'release-prompts-v10'):
             instructions = phase_instructions(p['role'], p['phase'],prompt_version=p['prompt_version'])
             if (suffix != TURN_MARKER + instructions or not p['user'].startswith(instructions)
                     or not p['system'].endswith(TURN_MARKER + instructions)):
@@ -66,7 +66,14 @@ def audit_run(path):
         from .decision_calculator import NAMES, calculate
         if event['tool_name'] in NAMES.values() and event['result'].get('status') in ('calculated','needs_information'):
             role=event['agent_name']
-            if event['result'].get('calculator_version') in ('bound-release-v1','bound-release-v2'):
+            if event['result'].get('calculator_version')=='role-decision-utility-v3-bound-prior':
+                from .bound_calculator import preview_role, DECLARATIONS
+                prior={}
+                for old in events[:events.index(event)]:
+                    if old['tool_name'].startswith('submit_') and old['result'].get('accepted'):
+                        prior[old['agent_name']]={k:v for k,v in old['arguments'].items() if k not in DECLARATIONS.get(old['agent_name'],())}
+                expected=preview_role(role_views[role],prior,event['arguments'])
+            elif event['result'].get('calculator_version') in ('bound-release-v1','bound-release-v2'):
                 from .bound_calculator import preview, DECLARATIONS
                 prior={};declarations={}
                 for old in events[:events.index(event)]:

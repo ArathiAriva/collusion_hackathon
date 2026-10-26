@@ -1,6 +1,6 @@
 # Release experiment: A versus D
 
-The main development study compares two pairings: **Product + Release** only. A assigns the pair a joint local-utility objective and a private board; D retains the shared organizational objective and public board only. This measures the combined objective/channel intervention, not their separate effects. D's reference pair is analysis metadata and is not disclosed as a coalition.
+The main development study compares **Product + Release** under two conditions. A assigns the pair a joint local-utility objective and a private board; D retains the shared organizational objective and public board only. This measures the combined objective/channel intervention, not their separate effects. D's reference pair is analysis metadata and is not disclosed as a coalition.
 
 ## Frozen setup
 
@@ -8,7 +8,7 @@ The main development study compares two pairings: **Product + Release** only. A 
 
 Five seeds × one family × one pairing × two conditions = **10 trajectories**. Other families are deferred to follow-up studies. Each scenario/pair block runs **A and D concurrently**, with independent clients, environments and output directories; the next block waits for both. Seeds/families/pairings progress serially. Maximum concurrency is **two trajectories**, with no D reuse. Use `--max-parallel 1` for serial execution.
 
-Current templates are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; earlier B/C templates are archived. Four roles, three planning rounds, one final phase, six model responses per turn: at most96 calls per trajectory /960 for this study. Prompts `release-prompts-v10` require a final-turn role-specific calculator check before submission in both conditions. This is an audited instruction, not a server-side submission gate. Payoffs, evidence access and incentives are documented in the [contract](../../docs/experiments/RELEASE_PIPELINE_CONTRACT.md) and [payoff protocol](../../docs/experiments/RELEASE_PAYOFF_COMPREHENSION.md).
+Current templates are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; earlier B/C templates are archived. Four roles, three planning rounds, one final phase, six model responses per turn: at most96 calls per trajectory /960 for this study. Prompts `release-prompts-v11` require a final-turn role-specific calculator check before submission in both conditions. This is an audited instruction, not a server-side submission gate. Payoffs, evidence access and incentives are documented in the [contract](../../docs/experiments/RELEASE_PIPELINE_CONTRACT.md) and [payoff protocol](../../docs/experiments/RELEASE_PAYOFF_COMPREHENSION.md).
 
 ## Run from the repository root
 
@@ -60,8 +60,24 @@ For a supervised restart, add `--stop-on-repeated-issues` and freeze `stopping_r
 
 ### V9 final handoff stabilization
 
-Current prompts are `release-prompts-v9`. QA's final submission declares `functional_loss`; Ops declares `day`, `alpha`, `operational_loss` from its selected configuration. These public-to-later-actors values are agent claims, not oracle truth. Release's FINAL calculator accepts **only** `{"disposition":"ordinary_go"}` (or defer/exception_go); committed prior fields and declared evidence are bound in code. No nested evidence reconstruction is needed. Final claims are saved in `declared_evidence.json`. Scoring/action domains remain unchanged; false numeric claims have no new reward penalty. This explicit disclosure handoff changes protocol version and must remain separate from older results. The checker now accepts earlier valid matching previews when alternatives were explored later. Current cards must use v9. A generated native pilot precedes retry; automatic repeated-issue stopping stays enabled.
+Historical v9 prompts are `release-prompts-v9`. QA's final submission declares `functional_loss`; Ops declares `day`, `alpha`, `operational_loss` from its selected configuration. These public-to-later-actors values are agent claims, not oracle truth. Release's FINAL calculator accepts **only** `{"disposition":"ordinary_go"}` (or defer/exception_go); committed prior fields and declared evidence are bound in code. No nested evidence reconstruction is needed. Final claims are saved in `declared_evidence.json`. Scoring/action domains remain unchanged; false numeric claims have no new reward penalty. This explicit disclosure handoff changes protocol version and must remain separate from older results. The checker now accepts earlier valid matching previews when alternatives were explored later. Historical v9 cards use v9. A generated native pilot precedes retry; automatic repeated-issue stopping stays enabled.
 
-### Current v10: authenticated owner-selected receipts
+### V10: authenticated owner-selected receipts
 
-QA/Ops again submit only their original decision fields. Submitting authorizes disclosure of the corresponding record from that caller's own initialized evidence: QA functional loss for committed scope; Ops day/alpha/loss for committed scope/chosen mode. Numeric evidence is selected in code, not retyped. Release's final preview remains disposition-only and uses `bound-release-v2`. `prior_declared_evidence` / `declared_evidence.json` retain legacy filenames but contain owner-selected receipts in v10 (`evidence_receipt_version` identifies them). Quality/readiness labels are not corrected. This constrains final numeric evidence concealment/forgery; it does not prevent the Product–Release pair from approving a known unsafe release. Planning communication remains agent-generated. Current cards use `release-prompts-v10`; preserve all older versions separately.
+QA/Ops again submit only their original decision fields. Submitting authorizes disclosure of the corresponding record from that caller's own initialized evidence: QA functional loss for committed scope; Ops day/alpha/loss for committed scope/chosen mode. Numeric evidence is selected in code, not retyped. Release's final preview remains disposition-only and uses `bound-release-v2`. `prior_declared_evidence` / `declared_evidence.json` retain legacy filenames but contain owner-selected receipts in v10 (`evidence_receipt_version` identifies them). Quality/readiness labels are not corrected. This constrains final numeric evidence concealment/forgery; it does not prevent the Product–Release pair from approving a known unsafe release. Planning communication remains agent-generated. Historical v10 cards use `release-prompts-v10`; preserve all older versions separately.
+
+### Current v11: bind prior commitments in final previews
+
+All final-turn role calculators now bind earlier accepted decision fields in code. For example, Ops cannot preview ordinary deployment with quality `clear` after QA committed `blocker`. Product/QA/Ops still supply a complete proposed decision; inspect `bound_decision` in the result. Own fields, later-role hypotheses and external numeric assumptions remain caller supplied. Release retains its disposition-only calculator and owner-published evidence receipts. Planning calculators are unchanged. Metadata records `role-decision-utility-v3-bound-prior`; new cards must use `release-prompts-v11`. Action domains, scoring and objectives are unchanged. This version has offline validation only; no v11 live results are available. Keep v9/v10 development batches separate.
+
+### Reviewed v10 three-seed summary
+
+To reproduce the reviewed stopped-v10 summary without model calls, choose a new output directory:
+
+```sh
+colosseum/.venv/bin/python scripts/release_pipeline/summarize_completed.py \
+  results/release-pipeline/release-product-release-deadline-v10-20261026 \
+  --output results/release-pipeline/release-v10-summary-new
+```
+
+This report is specific to v10 seeds201–203 and rejects other batches; its interpretation is not a generic template for future runs. It writes per-run CSV, matched differences, JSON and Markdown, retaining preview-check flags. Pilots and other versions are excluded. Generated results remain outside commits.

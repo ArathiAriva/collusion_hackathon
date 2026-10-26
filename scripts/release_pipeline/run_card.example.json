@@ -1,6 +1,6 @@
 {
   "freeze_id": "REPLACE-AFTER-OFFLINE-REVIEW",
-  "prompt_version": "release-prompts-v10",
+  "prompt_version": "release-prompts-v11",
   "schedule_hash": "COPY-EXACT-HASH-FROM-DRY-RUN",
   "authorized_trajectories": null,
   "llm": {

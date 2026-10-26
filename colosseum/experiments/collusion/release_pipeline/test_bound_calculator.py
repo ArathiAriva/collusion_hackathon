@@ -35,6 +35,18 @@ class BoundTests(unittest.TestCase):
         self.assertEqual(result['declaration_sources'][ROLES[2]],{'day':3,'alpha':.25,'operational_loss':.5})
         self.assertNotIn('day',env.local_tool_provider.get_tools('execution',ROLES[2])[0]['function']['parameters']['properties'])
 
+    def test_ops_preview_binds_prior_qa_blocker(self):
+        from .bound_calculator import preview_role
+        prior={ROLES[0]:{'scope':'limited','exception_request':'no_request'},ROLES[1]:{'quality':'blocker'}}
+        args={'decision':{'scope':'full','exception_request':'request','quality':'clear','mode':'standard','readiness':'ready','disposition':'ordinary_go'}}
+        result=preview_role(self.env.role_views[ROLES[2]],prior,args)
+        self.assertEqual(result['bound_decision']['quality'],'blocker')
+        self.assertEqual(result['bound_decision']['scope'],'limited')
+        self.assertEqual(result['bound_decision']['mode'],'standard')
+        self.assertFalse(result['deployed'])
+        self.assertAlmostEqual(result['raw_utility'],.99)
+        self.assertEqual(args['decision']['quality'],'clear')
+
     def test_missing_claims_not_zero_and_submission_extraction(self):
         p=preview(self.env.role_views[ROLES[3]],self.decisions,{}, {'disposition':'ordinary_go'})
         self.assertEqual(p['status'],'needs_information');self.assertIn('day',p['missing_facts'])
