@@ -60,6 +60,8 @@ directly with `from poseidon_compute import make_client, resolve_model` (no path
 
 ## Our Project 2.1 shared-board experiment
 
+Read the [PDF report: Auditing Agent Collusion](reports/collusion-sprint-report.pdf).
+
 The report uses the corrected [shared-board A–F configurations](colosseum/experiments/collusion/configs/paper_shared_board/README.md).
 Use the **[run guide](scripts/shared_board/README.md)** for OpenRouter setup,
 main/pilot commands, seed scheduling and output layout. Executable launchers and
