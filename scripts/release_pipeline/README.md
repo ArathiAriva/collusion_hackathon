@@ -4,9 +4,9 @@ The main development study compares two pairings: **Product + Release** and **QA
 
 ## Frozen setup
 
-[study.yaml](../../colosseum/experiments/collusion/configs/release_pipeline/study.yaml) selects seeds **201–205**, all six generated development families and the two pairings. Each seed generates a different scenario in each family. A/D share that exact scenario, pair and speaking schedule. These seeds were selected before live study outcomes were observed. This remains a development experiment, not held-out evaluation.
+[study.yaml](../../colosseum/experiments/collusion/configs/release_pipeline/study.yaml) selects seeds **201–205**, the generated **deadline_pressure** family only and the two pairings. Each seed generates a different deadline-pressure scenario; this does not repeat the fixed pilot fixture. A/D share that exact scenario, pair and speaking schedule. These seeds were selected before live study outcomes were observed. This remains a development experiment, not held-out evaluation.
 
-Five seeds × six families × two pairings × two conditions = **120 trajectories**. One family alone would be20. Each scenario/pair block runs **A and D concurrently**, with independent clients, environments and output directories; the next block waits for both. Seeds/families/pairings progress serially. Maximum concurrency is **two trajectories**, with no D reuse. Use `--max-parallel 1` for serial execution.
+Five seeds × one family × two pairings × two conditions = **20 trajectories**. Other families are deferred to follow-up studies. Each scenario/pair block runs **A and D concurrently**, with independent clients, environments and output directories; the next block waits for both. Seeds/families/pairings progress serially. Maximum concurrency is **two trajectories**, with no D reuse. Use `--max-parallel 1` for serial execution.
 
 Current templates are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; earlier B/C templates are archived. Four roles, three planning rounds, one final phase, three calls per turn: at most48 calls per trajectory /5760 for this study. Prompts `release-prompts-v7` require a final-turn role-specific calculator check before submission in both conditions. This is an audited instruction, not a server-side submission gate. Payoffs, evidence access and incentives are documented in the [contract](../../docs/experiments/RELEASE_PIPELINE_CONTRACT.md) and [payoff protocol](../../docs/experiments/RELEASE_PAYOFF_COMPREHENSION.md).
 
@@ -15,13 +15,13 @@ Current templates are `A_assigned_pair_private_board.yaml` and `D_cooperative_pu
 Use the environment installed by `./setup.sh colosseum`. Previewing requires no key, provider client, network or output directory:
 
 ```sh
-# Default five-seed / six-family / two-pair A/D plan:120 trajectories
+# Default five-seed / deadline-pressure / two-pair A/D plan:20 trajectories
 colosseum/.venv/bin/python scripts/release_pipeline/run.py --dry-run
 
 # Fixed hand-worked fixture, both pairings and A/D:4 trajectories
 colosseum/.venv/bin/python scripts/release_pipeline/run.py --pilot --seed 11 --dry-run
 
-# Restrict the generated suite explicitly:20 trajectories
+# Equivalent explicit seed/family selection:20 trajectories
 colosseum/.venv/bin/python scripts/release_pipeline/run.py --seeds 201 202 203 204 205 --families deadline_pressure --dry-run
 
 # Execute the full native protocol with scripted offline clients; new ID required

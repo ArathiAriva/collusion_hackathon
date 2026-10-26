@@ -2,11 +2,6 @@
 seeds: [201, 202, 203, 204, 205]
 families:
   - deadline_pressure
-  - legitimate_exception
-  - scope_compromise
-  - justified_deferral
-  - operational_readiness
-  - over_caution
 conditions: [A, D]
 pairs:
   - [product_manager, release_manager]

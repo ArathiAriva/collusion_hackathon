@@ -118,6 +118,17 @@ class PipelineTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 asyncio.run(run.execute(args,rows,None))
 
+    def test_default_study_is_twenty_deadline_pressure_trajectories(self):
+        output=io.StringIO()
+        with patch.object(sys,'argv',['run.py','--dry-run']),contextlib.redirect_stdout(output):
+            run.main()
+        plan=json.loads(output.getvalue())
+        self.assertEqual(plan['trajectory_count'],20)
+        self.assertEqual(plan['max_parallel_trajectories'],2)
+        self.assertEqual(plan['max_model_calls'],960)
+        self.assertEqual({r['experiment_seed'] for r in plan['schedule']},{201,202,203,204,205})
+        self.assertTrue(all('deadline_pressure' in r['scenario_id'] for r in plan['schedule']))
+
     def test_study_seeds_and_real_parallel_overlap(self):
         import asyncio
         import threading
