@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "batch_id": "f-oversight-eval-v1-seeds101-105",
+  "status": "completed",
+  "started_at_utc": "2026-10-25T03:22:52.330318+00:00",
+  "seeds": [
+    101,
+    102,
+    103,
+    104,
+    105
+  ],
+  "expected_trajectories": 5,
+  "max_parallel_trajectories": 1,
+  "source_sha256": {
+    "results/run_f_seed_blocks.py": "93750d7333f76f6d1b13447bb4cf90185dd0f329ab672a562883ecc2f2b3f01b",
+    "results/run_ae_once.py": "946837a9d64e619ed121b0eeac2c864f366fe2158757a76fb28d4b44af373f8e",
+    "results/analyze_ae_batch.py": "bbd70d3b363e37181e51f0f28dc67c06dbdaf448962aa7bc6fc4266bf55fe98e",
+    "results/F_OVERSIGHT_EXPERIMENT_PLAN.md": "754ff68a476bb19c223f0ae324b6b992655586f5d89c75c339d9bb4fa295b403",
+    "colosseum/experiments/collusion/run.py": "9d99de6b84ac8ecb62df998149c3f9ac48c65dac4244100d97ef85e7df4c2185",
+    "colosseum/experiments/collusion/prompts.py": "a792af4cbbe3927b944baa3c801bf70af9f039f5fb99010b1c307d53dd993606",
+    "colosseum/experiments/collusion/metrics.py": "259ebadae2a35c19efd842808ca39a5ba042947f1c670c91589500a96c069a09",
+    "colosseum/experiments/common/local_protocol.py": "85069a13ebb8e814086502fab8455d15154c4c5c19edc0ff74509370c714d4bc",
+    "colosseum/experiments/common/channel_aware_agent.py": "a45744a58e70341c0979eb4308b88dbb82557fadff09057a36f636f47c5dc8fe",
+    "colosseum/experiments/collusion/score_subsets.py": "5d4c874c5ee3dfb691ff85d1842fc549bf46cdd89bf5bc5b61c25915d5cba01b",
+    "colosseum/experiments/collusion/compute_jira_optimal.py": "0bbbe8ebeb54da75eda5800b161093a20599b744f3ce4cc1ac74e3651996de9e",
+    "colosseum/uv.lock": "9486fcd726af608149fbeab028d5cc6ef721c530715cbc5163dcb4ef50aaeae4"
+  },
+  "config_sha256": "6043b874151af4c2a459241f0a165ed03399ef41ea793ec19079042fee89311d",
+  "baseline_sha256": "549c6cf75a61d2e935e06277a028ded71aaea3db967f2503f53cfc63c279f6d7",
+  "baseline": "/Users/aarathi/chatgpt-projects/collusion_hackathon/results/ae-batches/shared-board-eval-v2-seeds101-105/analysis/results.json",
+  "git_commit": "9fdd43e0d19558dac06ad8b98d4b3fe37036b9d1",
+  "seed_blocks": [
+    {
+      "seed": 101,
+      "status": "completed",
+      "started_at_utc": "2026-10-25T03:22:52.341272+00:00",
+      "manifest": "/Users/aarathi/chatgpt-projects/collusion_hackathon/results/ae-batches/f-oversight-eval-v1-seeds101-105/seed101/manifest.json",
+      "audited": true,
+      "finished_at_utc": "2026-10-25T03:25:11.274215+00:00"
+    },
+    {
+      "seed": 102,
+      "status": "completed",
+      "started_at_utc": "2026-10-25T03:25:11.284439+00:00",
+      "manifest": "/Users/aarathi/chatgpt-projects/collusion_hackathon/results/ae-batches/f-oversight-eval-v1-seeds101-105/seed102/manifest.json",
+      "audited": true,
+      "finished_at_utc": "2026-10-25T03:28:06.253763+00:00"
+    },
+    {
+      "seed": 103,
+      "status": "completed",
+      "started_at_utc": "2026-10-25T03:28:06.264814+00:00",
+      "manifest": "/Users/aarathi/chatgpt-projects/collusion_hackathon/results/ae-batches/f-oversight-eval-v1-seeds101-105/seed103/manifest.json",
+      "audited": true,
+      "finished_at_utc": "2026-10-25T03:30:26.641590+00:00"
+    },
+    {
+      "seed": 104,
+      "status": "completed",
+      "started_at_utc": "2026-10-25T03:30:26.653444+00:00",
+      "manifest": "/Users/aarathi/chatgpt-projects/collusion_hackathon/results/ae-batches/f-oversight-eval-v1-seeds101-105/seed104/manifest.json",
+      "audited": true,
+      "finished_at_utc": "2026-10-25T03:32:47.943867+00:00"
+    },
+    {
+      "seed": 105,
+      "status": "completed",
+      "started_at_utc": "2026-10-25T03:32:47.958220+00:00",
+      "manifest": "/Users/aarathi/chatgpt-projects/collusion_hackathon/results/ae-batches/f-oversight-eval-v1-seeds101-105/seed105/manifest.json",
+      "audited": true,
+      "finished_at_utc": "2026-10-25T03:35:19.094334+00:00"
+    }
+  ],
+  "finished_at_utc": "2026-10-25T03:35:19.103277+00:00"
+}

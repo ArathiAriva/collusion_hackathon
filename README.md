@@ -63,8 +63,10 @@ directly with `from poseidon_compute import make_client, resolve_model` (no path
 The report uses the corrected [shared-board A–F configurations](colosseum/experiments/collusion/configs/paper_shared_board/README.md).
 Use the **[run guide](scripts/shared_board/README.md)** for OpenRouter setup,
 main/pilot commands, seed scheduling and output layout. Executable launchers and
-offline tests live in `scripts/shared_board/`; generated artifacts remain in the
-ignored `results/` folder and Colosseum's native output folders.
+offline tests live in `scripts/shared_board/`. New generated outputs remain ignored;
+the saved report/development records are committed as checksummed archives in
+[artifacts/results](artifacts/results/README.md). That guide includes offline
+rescoring and figure reproduction commands requiring no API key.
 
 From the repository root, preview A–E without model calls:
 
@@ -76,10 +78,13 @@ colosseum/.venv/bin/python scripts/shared_board/run_shared_seed_blocks.py --dry-
 
 The new four-role DCOP has a [dedicated run guide](scripts/release_pipeline/README.md)
 and [implementation status](docs/experiments/RELEASE_PIPELINE_IMPLEMENTATION_STATUS.md).
-It supports exact scoring, an A-versus-D comparison (assigned pair/private board versus cooperative public board), scripted offline trajectories,
-The current release study uses seeds201–205, Product–Release only, the generated deadline-pressure family only, with A/D run concurrently (maximum two trajectories):10 trajectories. See the release run guide for the offline preview and frozen-card live command.
-
-and saved-output analysis. The initial live seed-10 pilot is recorded in the implementation status.
+It supports exact scoring, saved-output analysis, scripted offline trajectories and
+an A-versus-D comparison: assigned pair/private board versus cooperative public board.
+The current plan uses seeds201–205, Product–Release only and generated deadline-pressure
+scenarios, with A/D concurrent (maximum two):10 trajectories. Current code is v11,
+validated offline only. Archived v9/v10 runs stopped early and remain separate
+exploratory results. See the [reviewer guide](artifacts/results/README.md) for their
+reports/raw evidence, and the release run guide for new offline/live runs.
 
 ```sh
 colosseum/.venv/bin/python scripts/release_pipeline/run.py --pilot --dry-run

@@ -10,6 +10,15 @@ Five seeds × one family × one pairing × two conditions = **10 trajectories**.
 
 Current templates are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; earlier B/C templates are archived. Four roles, three planning rounds, one final phase, six model responses per turn: at most96 calls per trajectory /960 for this study. Prompts `release-prompts-v11` require a final-turn role-specific calculator check before submission in both conditions. This is an audited instruction, not a server-side submission gate. Payoffs, evidence access and incentives are documented in the [contract](../../docs/experiments/RELEASE_PIPELINE_CONTRACT.md) and [payoff protocol](../../docs/experiments/RELEASE_PAYOFF_COMPREHENSION.md).
 
+## Setup and inference configuration
+
+Install `uv`, then run `./setup.sh colosseum` from the repository root. For offline
+previews, scripted trajectories and saved-output review, no API key is needed.
+For live execution only, copy `compute.env.example` to `compute.env` if it does not
+already exist, and set your own `OPENROUTER_API_KEY`. Leave global `LLM_MODEL`
+overrides unset. Never put credentials in YAML, cards or artifacts. The frozen
+card names OpenRouter `openai/gpt-4o-mini`; no Nebius account is required.
+
 ## Run from the repository root
 
 Use the environment installed by `./setup.sh colosseum`. Previewing requires no key, provider client, network or output directory:
@@ -37,7 +46,9 @@ The live card must match the exact printed schedule hash, trajectory count, curr
 
 ## Artifacts and checks
 
-All outputs remain under ignored `results/release-pipeline/<batch-id>/`. New IDs only; no overwrite/resume or automatic trajectory retries. Every run has its own scenario/config, source lineage, native messages/prompts/tool events, outcome, metrics and annotation packet. `payoff_checks.json` checks final calculator use, own/prior fields, used facts and candidate payoff against the offline oracle; later-role assumptions are reported separately. Checks do not send hidden truth to agents. Scripted offline clients do not demonstrate comprehension. Manifest records both condition results after each matched block; an unexpected exception stops the batch after its peer finishes, preserving successful artifacts. SDK transport retries may still apply.
+New outputs remain under ignored `results/release-pipeline/<batch-id>/`. Saved
+v9/v10 results, pilots and earlier diagnostics are committed as
+[checksummed archives with portable offline review commands](../../artifacts/results/README.md). New IDs only; no overwrite/resume or automatic trajectory retries. Every run has its own scenario/config, source lineage, native messages/prompts/tool events, outcome, metrics and annotation packet. `payoff_checks.json` checks final calculator use, own/prior fields, used facts and candidate payoff against the offline oracle; later-role assumptions are reported separately. Checks do not send hidden truth to agents. Scripted offline clients do not demonstrate comprehension. Manifest records both condition results after each matched block; an unexpected exception stops the batch after its peer finishes, preserving successful artifacts. SDK transport retries may still apply.
 
 `analysis.json` contains completion/audits, matched contrasts and scenario-clustered summaries; `all_pair_metrics.csv` includes all pairs in each complete run. Scored subsets are distinct from selected coalition membership. Failed/incomplete trajectories stay recorded. Scenario observations from different role-pair conditions are dependent; do not count them as independent seeds.
 
@@ -76,8 +87,31 @@ To reproduce the reviewed stopped-v10 summary without model calls, choose a new 
 
 ```sh
 colosseum/.venv/bin/python scripts/release_pipeline/summarize_completed.py \
-  results/release-pipeline/release-product-release-deadline-v10-20261026 \
-  --output results/release-pipeline/release-v10-summary-new
+  /tmp/collusion-review/results/release-pipeline/release-product-release-deadline-v10-20261026 \
+  --output /tmp/collusion-review-v10-summary
 ```
 
-This report is specific to v10 seeds201–203 and rejects other batches; its interpretation is not a generic template for future runs. It writes per-run CSV, matched differences, JSON and Markdown, retaining preview-check flags. Pilots and other versions are excluded. Generated results remain outside commits.
+Extract the archives to `/tmp/collusion-review` first using the reviewer guide.
+This report is specific to v10 seeds201–203 and rejects other batches; its interpretation is not a generic template for future runs. It writes per-run CSV, matched differences, JSON and Markdown, retaining preview-check flags. Pilots and other versions are excluded. New outputs remain ignored; the reviewed historical snapshot is archived in Git.
+
+### Preparing a new live run card
+
+Copy `scripts/release_pipeline/run_card.example.json` to a new local JSON file.
+Run the dry-run command above and fill `schedule_hash`, `authorized_trajectories`
+(10 for the default study), `prompt_version`, a unique `freeze_id`, dated verified
+endpoint `rates`, and a positive estimated `resource_estimate_usd`. Keep the
+configured model/temperature/output limit. Choose
+`stopping_rule: stop-on-repeated-issues-v1` and invoke the matching flag:
+
+```sh
+colosseum/.venv/bin/python scripts/release_pipeline/run.py \
+  --live --run-card /path/to/your-completed-card.json \
+  --stop-on-repeated-issues --batch-id release-ad-v11-reproduction-001
+```
+
+That command spends API credit. The card estimate is not a hard spend cap.
+Validation rejects incomplete or mismatched cards. The example template is not
+ready to run, and archived v9/v10 cards cannot run against current v11 code. A new
+v11 live run remains a development evaluation; do not label it an exact replay of
+the archived trajectories. Source/config snapshots and lockfiles record historical
+versions, while model/provider sampling can change between live runs.

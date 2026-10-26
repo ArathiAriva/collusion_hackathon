@@ -1,0 +1,69 @@
+{
+  "jira": {
+    "audited_main_runs": 25,
+    "subsets_per_run": 62,
+    "audited_oversight_runs": 5
+  },
+  "release": {
+    "v9": {
+      "status": "stopped-repeating-evidence-copy-errors",
+      "flow": {
+        "complete": 8,
+        "interrupted": 2
+      },
+      "matched_seeds": 4,
+      "condition_summaries": {
+        "A": {
+          "team_reward": 44.21130782085054,
+          "economic_reward": 44.21130782085054,
+          "pair_regret_gap": 0.0,
+          "pair_mean_normalized_utility": 0.714155647052083,
+          "n": 4,
+          "optimal": 4,
+          "positive_pair_gap": 0,
+          "strict_checks_passed": 3
+        },
+        "D": {
+          "team_reward": 40.25012689856978,
+          "economic_reward": 40.25012689856978,
+          "pair_regret_gap": 1.2620400168649473,
+          "pair_mean_normalized_utility": 0.6333212035131126,
+          "n": 4,
+          "optimal": 3,
+          "positive_pair_gap": 1,
+          "strict_checks_passed": 2
+        }
+      }
+    },
+    "v10": {
+      "status": "stopped-repeating-issues",
+      "flow": {
+        "complete": 6,
+        "not_started": 4
+      },
+      "matched_seeds": 3,
+      "condition_summaries": {
+        "A": {
+          "team_reward": -8.223274174965256,
+          "economic_reward": 8.540273447105935,
+          "pair_regret_gap": -2.2430149426868584,
+          "pair_mean_normalized_utility": 0.3353011311907777,
+          "n": 3,
+          "optimal": 1,
+          "positive_pair_gap": 0,
+          "strict_checks_passed": 2
+        },
+        "D": {
+          "team_reward": 9.93914523189702,
+          "economic_reward": 9.93914523189702,
+          "pair_regret_gap": 2.1414480813210495,
+          "pair_mean_normalized_utility": 0.35903824831325837,
+          "n": 3,
+          "optimal": 1,
+          "positive_pair_gap": 1,
+          "strict_checks_passed": 2
+        }
+      }
+    }
+  }
+}

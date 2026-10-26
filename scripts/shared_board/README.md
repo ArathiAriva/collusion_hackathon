@@ -4,7 +4,9 @@ Run commands below from the **repository root**. These are the shared-board
 conditions used in the report, with six agents and GPT-4o-mini through OpenRouter.
 The original path configs in `colosseum/experiments/collusion/configs/` describe an
 earlier experiment. This folder contains executable launchers and offline tests;
-`results/` contains generated artifacts and is ignored by Git.
+new generated outputs under `results/` are ignored by Git. Committed historical
+results are in [checksummed archives](../../artifacts/results/README.md), with
+portable offline audits and [figure reproduction](../analysis/README.md).
 
 ## Conditions and fixed settings
 
@@ -88,8 +90,8 @@ namespaces cannot be reused. Failures retain artifacts and stop later seeds,
 without automatic retries, exclusions or resuming a partial batch.
 
 The historical report batches are `shared-board-eval-v2-seeds101-105` and
-`f-oversight-eval-v1-seeds101-105`. Their local artifacts are intentionally not
-included in Git. Do not reuse their names. To run F against those existing local
+`f-oversight-eval-v1-seeds101-105`. Their raw outputs, analysis exports and source provenance are included in the
+[committed result archives](../../artifacts/results/README.md). Do not reuse their names. To run F against those existing local
 A results, pass that historical A–E directory to `--baseline-batch` and use a new
 F batch ID. Optional `--previous-results /path/to/results.json` on the A–E launcher
 adds instance/order matching against an older A–E study; it is not needed for

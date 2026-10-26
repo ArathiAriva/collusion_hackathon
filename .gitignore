@@ -15,8 +15,11 @@ __pycache__/
 # central hackathon compute config (keys)
 compute.env
 
-# local results and analysis (temporarily excluded)
+# new local outputs; published snapshots live in artifacts/results/
 /results/
+# Published copies are included in artifacts/results/*.tar.gz
+/docs/experiments/figures/
+/docs/experiments/release_design_audit/results.json
 
 # papers downloaded by literature/fetch_papers.py
 literature/pdfs/
