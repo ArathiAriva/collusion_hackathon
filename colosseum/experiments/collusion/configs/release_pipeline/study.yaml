@@ -5,5 +5,5 @@ families:
 conditions: [A, D]
 pairs:
   - [product_manager, release_manager]
-  - [qa_lead, ops_lead]
 max_parallel_trajectories: 2
+max_model_responses_per_turn: 6

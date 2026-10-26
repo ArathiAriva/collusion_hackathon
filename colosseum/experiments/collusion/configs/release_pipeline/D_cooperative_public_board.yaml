@@ -12,4 +12,4 @@ release:
 simulation:
   max_iterations: 1
   max_planning_rounds: 3
-  max_conversation_steps: 3
+  max_conversation_steps: 6

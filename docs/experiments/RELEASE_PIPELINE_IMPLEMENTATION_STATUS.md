@@ -136,3 +136,7 @@ Initial grader erroneously gated arithmetic consistency on canonical component n
 ### v6 payoff comprehension update (2026-10-25)
 
 Role-specific decision calculators and piecewise outcome rules are implemented; main evaluator/incentives unchanged. All 4,032 role/assignment comparisons across seven development scenarios match the evaluator. New source: `decision_calculator.py`, tests: `test_decision_calculator.py`. Tool-assisted diagnostic has correct utilities24/24 GPT4omini and23/24 Luna, but both only3/4 full rankings, with timing/QA transfer errors remaining. Strict comprehension acceptance is not fully met; do not treat the new smoke as authorization for broad expansion. See RELEASE_PAYOFF_COMPREHENSION.md and PROJECT_LOG.md. Historical artifacts retained; no commits.
+
+### V8 after user-stopped study
+
+Current default: Product–Release only, deadline_pressure seeds201–205, A/D max2 concurrency,10 trajectories. Six model responses per turn; per-request private budget notices and saved `budget_notices.json`. Calculator v2 removes irrelevant alpha requirements for zero losses and gives actionable missing-input repairs; explicit scope/mode/timing/reporting instructions added. Last-response submission is a fallback with failed checks retained. Stopped v7 study is preserved and not resumed. Offline replay of4 failed first-QA calculations succeeds; no live v8 run launched. Historical calculator code retained for faithful audit replay. See payoff protocol for the remaining comprehension limits.

@@ -1,18 +1,7 @@
-# Release go/no-go: A versus D
+# Product–Release / deadline pressure: A versus D
 
-Use the [release run guide](../../../../../scripts/release_pipeline/README.md). Current templates:
+Use the [run guide](../../../../../scripts/release_pipeline/README.md). `study.yaml` declares seeds201–205, generated deadline_pressure only, Product–Release only, A/D, maximum2 parallel trajectories and6 model responses per actor turn. This is10 trajectories.
 
-| Config | Objective | Boards |
-| --- | --- | --- |
-| `A_assigned_pair_private_board.yaml` | Assigned pair prioritizes mean normalized local utility | Public plus pair-private |
-| `D_cooperative_public_board.yaml` | All roles retain shared organizational objective | Public only |
+`A_assigned_pair_private_board.yaml` assigns the pair a local-utility objective and private board in addition to public discussion. `D_cooperative_public_board.yaml` keeps the shared objective and public board only; its reference pair is not disclosed as a coalition. Their combined difference does not isolate channel from objective effects.
 
-The current launcher runs A and D only, defaulting to both. Original condition letters remain in outputs for continuity. D receives no coalition assignment; its matched reference pair is analysis metadata. This comparison changes both the pair objective and private-board access, so it measures their combined effect. It cannot identify their individual effects.
-
-Four roles, three planning rounds by default, three model calls per turn and one final submission phase. Current v7 instructions require final-turn payoff checks in both conditions. Scenarios, reference pairs, speaking schedules and models are matched; Product–Release and QA–Ops are scheduled by default; `--pair` can select one pairing explicitly. Live dispatch requires a frozen card.
-
-Unused B/C templates are preserved under `archive/` for historical context; the current launcher does not dispatch them. Historical run artifacts remain unchanged.
-
-Current selected pairings (2026-10-26): **Product + Release** and **QA + Ops**, chosen for the main A/D comparison after reviewing development opportunity counts (49/120 and47/120). Other pairings are deferred to follow-up studies. This is an exploratory selection based on development data. Default pilot:4 trajectories; five seeds ×two pairings ×two conditions =20 trajectories for one scenario family. The full generated suite has six families, so five instances per family would mean120 trajectories. `--pair` remains an explicit single-pair override. Original pair indices/run IDs and seeds are preserved.
-
-The current generated study is declared in `study.yaml`: seeds201–205, deadline pressure only, two pairings, A/D in parallel, maximum2 trajectories. That is20 trajectories. The dedicated launcher defaults to this declaration; see the run guide for pilot/legacy overrides.
+Four roles, three planning rounds and one final phase. Current prompts v8 require final payoff calculation, with explicit six-response budgets and dynamic notices. Missing checks are retained; final submission should not be omitted when the budget ends. Other pairings/families and archived B/C are deferred; an explicit `--pair`/`--families` override is for separate diagnostics/follow-ups. Existing stopped v7 results remain unchanged.

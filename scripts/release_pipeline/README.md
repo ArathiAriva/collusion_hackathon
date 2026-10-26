@@ -1,27 +1,27 @@
 # Release experiment: A versus D
 
-The main development study compares two pairings: **Product + Release** and **QA + Ops**. A assigns the pair a joint local-utility objective and a private board; D retains the shared organizational objective and public board only. This measures the combined objective/channel intervention, not their separate effects. D's reference pair is analysis metadata and is not disclosed as a coalition.
+The main development study compares two pairings: **Product + Release** only. A assigns the pair a joint local-utility objective and a private board; D retains the shared organizational objective and public board only. This measures the combined objective/channel intervention, not their separate effects. D's reference pair is analysis metadata and is not disclosed as a coalition.
 
 ## Frozen setup
 
-[study.yaml](../../colosseum/experiments/collusion/configs/release_pipeline/study.yaml) selects seeds **201–205**, the generated **deadline_pressure** family only and the two pairings. Each seed generates a different deadline-pressure scenario; this does not repeat the fixed pilot fixture. A/D share that exact scenario, pair and speaking schedule. These seeds were selected before live study outcomes were observed. This remains a development experiment, not held-out evaluation.
+[study.yaml](../../colosseum/experiments/collusion/configs/release_pipeline/study.yaml) selects seeds **201–205**, the generated **deadline_pressure** family only and the Product–Release pairing. Each seed generates a different deadline-pressure scenario; this does not repeat the fixed pilot fixture. A/D share that exact scenario, pair and speaking schedule. These seeds were selected before live study outcomes were observed. This remains a development experiment, not held-out evaluation.
 
-Five seeds × one family × two pairings × two conditions = **20 trajectories**. Other families are deferred to follow-up studies. Each scenario/pair block runs **A and D concurrently**, with independent clients, environments and output directories; the next block waits for both. Seeds/families/pairings progress serially. Maximum concurrency is **two trajectories**, with no D reuse. Use `--max-parallel 1` for serial execution.
+Five seeds × one family × one pairing × two conditions = **10 trajectories**. Other families are deferred to follow-up studies. Each scenario/pair block runs **A and D concurrently**, with independent clients, environments and output directories; the next block waits for both. Seeds/families/pairings progress serially. Maximum concurrency is **two trajectories**, with no D reuse. Use `--max-parallel 1` for serial execution.
 
-Current templates are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; earlier B/C templates are archived. Four roles, three planning rounds, one final phase, three calls per turn: at most48 calls per trajectory /5760 for this study. Prompts `release-prompts-v7` require a final-turn role-specific calculator check before submission in both conditions. This is an audited instruction, not a server-side submission gate. Payoffs, evidence access and incentives are documented in the [contract](../../docs/experiments/RELEASE_PIPELINE_CONTRACT.md) and [payoff protocol](../../docs/experiments/RELEASE_PAYOFF_COMPREHENSION.md).
+Current templates are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; earlier B/C templates are archived. Four roles, three planning rounds, one final phase, six model responses per turn: at most96 calls per trajectory /960 for this study. Prompts `release-prompts-v8` require a final-turn role-specific calculator check before submission in both conditions. This is an audited instruction, not a server-side submission gate. Payoffs, evidence access and incentives are documented in the [contract](../../docs/experiments/RELEASE_PIPELINE_CONTRACT.md) and [payoff protocol](../../docs/experiments/RELEASE_PAYOFF_COMPREHENSION.md).
 
 ## Run from the repository root
 
 Use the environment installed by `./setup.sh colosseum`. Previewing requires no key, provider client, network or output directory:
 
 ```sh
-# Default five-seed / deadline-pressure / two-pair A/D plan:20 trajectories
+# Default five-seed / deadline-pressure / Product–Release A/D plan:10 trajectories
 colosseum/.venv/bin/python scripts/release_pipeline/run.py --dry-run
 
-# Fixed hand-worked fixture, both pairings and A/D:4 trajectories
+# Fixed hand-worked fixture, Product–Release and A/D:2 trajectories
 colosseum/.venv/bin/python scripts/release_pipeline/run.py --pilot --seed 11 --dry-run
 
-# Equivalent explicit seed/family selection:20 trajectories
+# Equivalent explicit seed/family selection:10 trajectories
 colosseum/.venv/bin/python scripts/release_pipeline/run.py --seeds 201 202 203 204 205 --families deadline_pressure --dry-run
 
 # Execute the full native protocol with scripted offline clients; new ID required
@@ -49,3 +49,9 @@ PYTHONPATH=colosseum colosseum/.venv/bin/python -m unittest discover -s scripts/
 ```
 
 The separate `comprehension.py` diagnostic supports tool-free preflight or `--with-tools`; live use needs its own frozen card. `audit_scenarios.py` verifies structural opportunities offline. `annotate.py` validates human records against saved annotation packets; use `--help` for arguments. Historical v1–v6 artifacts and earlier incomplete pilots remain preserved, with their original prompt versions and limitations. Historical Jira scripts/results are separate and unchanged.
+
+Budget details: `max_conversation_steps: 6` counts model responses (including the first) per actor per planning/final turn; one response can contain multiple tool calls. Initial prompts state the limit and a private notice before every request shows response index and remaining responses. Notices are saved in `budget_notices.json`. Six responses permit calculation, repair and submission; reserve the final response for submission. If no successful check was possible, submit rather than silently exhaust the budget: the missing check remains a failure in the audit. This does not certify comprehension. Calculator v2 does not require alpha when functional loss is zero; it never retrieves another role’s private facts. Missing-input replies explicitly say which numeric keys to supply. Use full-precision facts for the exact scope/mode; QA labels refer to the committed scope. Stopped v7 results remain preserved and separate.
+
+Seeds201/202 were partially observed in the stopped v7 development batch. V8 is a revised development setup; preserve version separation and do not describe these reused seeds as fresh held-out evaluation.
+
+For a supervised restart, add `--stop-on-repeated-issues` and freeze `stopping_rule: stop-on-repeated-issues-v1` in the live card. After each matched A/D block, stop before launching another if the same issue category occurs in at least two trajectories: missing submission/run failure, missing final payoff check, calculator own/prior decision mismatch, or candidate utility error greater than0.01 raw utility. Small rounding differences alone do not trigger this rule. Low reward, policy violations or coalition advantage are outcomes, not technical stop triggers. Already-active paired trajectories finish before this block-boundary stop; unexpected execution exceptions stop the batch. No retries or replacements. Stopped results are exploratory and should not be treated as a complete fixed-sample study.

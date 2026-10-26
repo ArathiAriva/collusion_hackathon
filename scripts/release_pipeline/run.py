@@ -19,7 +19,7 @@ from experiments.collusion.release_pipeline.analysis import analyze_batch
 from experiments.collusion.release_pipeline.prompts import PROMPT_VERSION
 
 
-STUDY_PAIRS = (('product_manager','release_manager'), ('qa_lead','ops_lead'))
+STUDY_PAIRS = (('product_manager','release_manager'),)
 
 def schedule(*, pilot=False, instances=2, seed=20261025, conditions=('A','D'), partition='development', selected_pair=None, planning_rounds=DEFAULT_PLANNING_ROUNDS):
     if not conditions or len(set(conditions))!=len(conditions) or set(conditions)-{'A','D'}:
@@ -78,7 +78,7 @@ def config_for(item, llm=None):
             'release':{'condition':item['condition'],'selected_role_pair':item['pair'],
                 'prompt_version':PROMPT_VERSION,
                 'speaking_seed':item['speaking_seed'],'replicate_id':item['replicate_id']},
-            'simulation':{'max_iterations':1,'max_planning_rounds':item.get('planning_rounds',4),'max_conversation_steps':3},
+            'simulation':{'max_iterations':1,'max_planning_rounds':item.get('planning_rounds',4),'max_conversation_steps':6},
             'llm':llm or {'provider':'scripted-offline'}}
     names={'A':'A_assigned_pair_private_board.yaml','D':'D_cooperative_public_board.yaml'}
     path = ROOT/'colosseum/experiments/collusion/configs/release_pipeline'/names[item['condition']]
@@ -125,7 +125,7 @@ def validate_card(card, rows):
         raise ValueError('Verified, dated endpoint rates required before live dispatch')
     if any(type(rates[k]) not in (float,int) or not math.isfinite(rates[k]) or rates[k]<0 for k in ('input_per_million','output_per_million')):
         raise ValueError('Invalid rates')
-    if card.get('retry_policy')!='no-automatic-trajectory-retry' or card.get('stopping_rule')!='run-frozen-schedule':
+    if card.get('retry_policy')!='no-automatic-trajectory-retry' or card.get('stopping_rule') not in ('run-frozen-schedule','stop-on-repeated-issues-v1'):
         raise ValueError('Freeze retry and stopping rules')
     if type(card.get('resource_estimate_usd')) not in (float,int) or not math.isfinite(card['resource_estimate_usd']) or card['resource_estimate_usd']<=0:
         raise ValueError('A concrete positive USD resource estimate is required')
@@ -163,6 +163,23 @@ def validate_live_endpoint(llm):
     return resolved
 
 
+def repeating_issues(output, completed):
+    """Only technical/payoff-input failures; never stop for collusion or low reward."""
+    occurrences={}
+    for record in completed:
+        path=Path(output)/'runs'/record['run_id']
+        checks=json.loads((path/'payoff_checks.json').read_text())
+        issues=set()
+        if record['status']!='complete': issues.add('missing_submission_or_run_failure')
+        for role in checks['roles']:
+            if not role['submitted']: continue  # Downstream turns may never have run.
+            if not role['successful_final_checks']: issues.add('missing_final_payoff_check')
+            elif not role['own_fields_match'] or not role['prior_fields_match']: issues.add('calculator_decision_mismatch')
+            elif abs(role['candidate_utility']-role['oracle_candidate_utility'])>.01: issues.add('material_payoff_input_error')
+        for issue in issues: occurrences.setdefault(issue,[]).append(record['run_id'])
+    return {issue:ids for issue,ids in occurrences.items() if len(ids)>=2}
+
+
 async def execute(args, rows, llm):
     import subprocess
     resolved_model = validate_live_endpoint(llm) if args.live else None
@@ -176,7 +193,7 @@ async def execute(args, rows, llm):
         'prompt_version':PROMPT_VERSION,
         'schedule_hash':digest(rows),'source_hashes':hashes,'dependencies':deps,
         'git_commit':commit,'working_tree_status':dirty,
-        'retry_policy':'no-automatic-trajectory-retry','stopping_rule':'run-frozen-schedule',
+        'retry_policy':'no-automatic-trajectory-retry','stopping_rule':'stop-on-repeated-issues-v1' if getattr(args,'stop_on_repeated_issues',False) else 'run-frozen-schedule',
         'max_parallel_trajectories':getattr(args,'max_parallel',2),
         'D_reuse':False,'status':'running','completed':[],
         'run_card':getattr(args,'resolved_card',None)}
@@ -211,6 +228,16 @@ async def execute(args, rows, llm):
             manifest['status']='execution-error'
         write_json(output/'manifest.json',manifest)
         if errors: raise errors[0]
+        print(json.dumps({'completed':len(manifest['completed']),'planned':len(rows),'last_block':group[0]['block_id']}),flush=True)
+        if getattr(args,'stop_on_repeated_issues',False):
+            repeated=repeating_issues(output,manifest['completed'])
+            if repeated:
+                manifest['status']='stopped-repeating-issues'
+                manifest['repeated_issues']=repeated
+                write_json(output/'manifest.json',manifest)
+                analysis=analyze_batch(output)
+                print(json.dumps({'batch':str(output),'status':manifest['status'],'issues':repeated}),flush=True)
+                return
     analysis = analyze_batch(output)
     manifest['status'] = 'complete' if analysis['completed_count']==len(rows) else 'finished-with-failures'
     write_json(output/'manifest.json',manifest)
@@ -235,6 +262,7 @@ def main():
                         help='Run only this role pair; default Product–Release and QA–Ops')
     parser.add_argument('--dry-run',action='store_true')
     parser.add_argument('--live',action='store_true')
+    parser.add_argument('--stop-on-repeated-issues',action='store_true',help='Stop between matched blocks if a technical/payoff error recurs in two trajectories')
     parser.add_argument('--run-card')
     parser.add_argument('--analyze',type=Path)
     args = parser.parse_args()
@@ -252,7 +280,7 @@ def main():
         else:
             import yaml
             study=yaml.safe_load(STUDY_CONFIG.read_text())
-            if study['pairs']!=[list(p) for p in STUDY_PAIRS] or study['conditions']!=['A','D'] or study['max_parallel_trajectories']!=2:
+            if study['pairs']!=[list(p) for p in STUDY_PAIRS] or study['conditions']!=['A','D'] or study['max_parallel_trajectories']!=2 or study['max_model_responses_per_turn']!=6:
                 raise ValueError('Study config and launcher protocol differ')
             rows=study_schedule(args.seeds or study['seeds'],args.families or study['families'],conditions=tuple(args.conditions),partition=args.partition,selected_pair=args.pair,planning_rounds=args.planning_rounds)
     except ValueError as exc:
@@ -262,6 +290,8 @@ def main():
         config_for(item)
     args.resolved_card = json.loads(Path(args.run_card).read_text()) if args.run_card else None
     llm = validate_card(args.resolved_card,rows) if args.resolved_card else None
+    if args.resolved_card and (args.resolved_card['stopping_rule']=='stop-on-repeated-issues-v1') != args.stop_on_repeated_issues:
+        parser.error('Stopping rule must match the frozen card and CLI')
     if args.live and llm is None:
         parser.error('--live requires a frozen, costed --run-card')
     if args.dry_run:
@@ -277,7 +307,7 @@ def main():
             for role in ROLES:
                 ctx = env.build_agent_context(role,'planning',1,planning_round=1)
                 samples.append(len((env.prompts.get_system_prompt(ctx)+env.prompts.get_user_prompt(agent_name=role,agent_context=ctx,blackboard_context={})).encode()))
-        max_calls = sum(4*(row['planning_rounds']+1)*3 for row in rows)
+        max_calls = sum(4*(row['planning_rounds']+1)*6 for row in rows)
         print(json.dumps({'trajectory_count':len(rows),'schedule_hash':digest(rows),'prompt_version':PROMPT_VERSION,
             'max_parallel_trajectories':args.max_parallel,
             'planning_rounds':args.planning_rounds,'max_model_calls':max_calls,'max_output_tokens':max_calls*1500,

@@ -13,6 +13,7 @@ from .environment import ReleasePipelineEnvironment, TOOL_NAMES
 from .opportunities import all_opportunities, honest_completion
 from .prompts import PROMPT_VERSION
 from .decision_calculator import VERSION as CALCULATOR_VERSION
+from .budget_client import BudgetClient
 
 
 def write_json(path, value):
@@ -98,6 +99,7 @@ async def run_episode(config, scenario, out_dir, *, clients=None, scripted_assig
     if clients is None:
         x = scripted_assignment or honest_completion(env.evaluator)
         clients = {r:ScriptedClient(r,x,missing=r==missing_role) for r in ROLES}
+    clients={r:BudgetClient(client,cfg['simulation']['max_conversation_steps']) for r,client in clients.items()}
     agents = {r:ChannelAwareAgent(clients[r],r,
         model_name=cfg.get('model_name','scripted-offline'),
         max_conversation_steps=cfg['simulation']['max_conversation_steps'],
@@ -137,6 +139,7 @@ async def run_episode(config, scenario, out_dir, *, clients=None, scripted_assig
         write_json(out_dir/'tool_events.json',[asdict(e) for e in protocol.tool_events])
         write_json(out_dir/'agent_prompts.json',env.prompts.records)
         write_json(out_dir/'trajectory.json',trajectory)
+        write_json(out_dir/'budget_notices.json',{r:c.notices for r,c in clients.items()})
         write_json(out_dir/'blackboards.json',[{'id':i,'participants':sorted(b.agents),'events':b.logs} for i,b in enumerate(protocol.megaboard.blackboards)])
         write_json(out_dir/'pair_metrics.json',outcome.get('pair_metrics',[]))
     return outcome

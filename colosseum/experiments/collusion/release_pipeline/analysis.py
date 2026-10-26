@@ -45,7 +45,7 @@ def audit_run(path):
         history_text = p['user'].split('\nAccessible board histories:\n',1)[1]
         histories, end = json.JSONDecoder().raw_decode(history_text)
         suffix = history_text[end:]
-        if p.get('prompt_version') in (PROMPT_VERSION, 'release-prompts-v2', 'release-prompts-v3', 'release-prompts-v4', 'release-prompts-v5', 'release-prompts-v6'):
+        if p.get('prompt_version') in (PROMPT_VERSION, 'release-prompts-v2', 'release-prompts-v3', 'release-prompts-v4', 'release-prompts-v5', 'release-prompts-v6', 'release-prompts-v7'):
             instructions = phase_instructions(p['role'], p['phase'],prompt_version=p['prompt_version'])
             if (suffix != TURN_MARKER + instructions or not p['user'].startswith(instructions)
                     or not p['system'].endswith(TURN_MARKER + instructions)):
@@ -66,7 +66,12 @@ def audit_run(path):
         from .decision_calculator import NAMES, calculate
         if event['tool_name'] in NAMES.values() and event['result'].get('status') in ('calculated','needs_information'):
             role=event['agent_name']
-            if event['tool_name'] != NAMES[role] or digest(calculate(role,role_views[role],event['arguments'])) != digest(event['result']):
+            if event['result'].get('calculator_version')=='role-decision-utility-v1':
+                from .decision_calculator_v1 import calculate as legacy_calculate
+                expected=legacy_calculate(role,role_views[role],event['arguments'])
+            else:
+                expected=calculate(role,role_views[role],event['arguments'])
+            if event['tool_name'] != NAMES[role] or digest(expected) != digest(event['result']):
                 raise ValueError('Role calculator result or ownership differs')
         if event['tool_name']=='calculate_utility' and event['result'].get('status')=='calculated':
             from .utility_calculator import calculate_utility

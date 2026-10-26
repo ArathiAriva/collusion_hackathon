@@ -1,5 +1,7 @@
 # Release environment executable contract
 
+> Updated scope after stopped run (2026-10-26): Product–Release only, generated deadline pressure, seeds201–205, A/D,10 trajectories. V8 uses six model responses per actor turn, dynamic budget notices, and calculator v2 zero-loss/missing-input fixes. Earlier scope/version notes below are historical. No live v8 run has been launched.
+
 > Current experimental scope (2026-10-26): A versus D only. A combines the assigned-pair objective and pair-private board; D retains the shared objective and public board only. B/C ablations below describe the earlier design and are not scheduled. Current defaults are three planning rounds and v7 required final payoff checks. Config filenames are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; the main study selects Product–Release and QA–Ops; other pairings are follow-up work.
 
 Version: `release-v1-dev`, October 25, 2026. Development implementation; the first live seed-10 A/D pilot has finished, with final-submission reliability issues recorded in the implementation status. Held-out evaluation has not run. This records T01–T03 implementation decisions from the [plan](RELEASE_PIPELINE_IMPLEMENTATION_PLAN.md).

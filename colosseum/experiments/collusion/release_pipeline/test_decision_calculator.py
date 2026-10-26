@@ -35,6 +35,19 @@ class DecisionCalculatorTests(unittest.TestCase):
         self.assertAlmostEqual(out['benefit'],.1)
         self.assertNotIn('operations',out['evidence_used'])
         self.assertEqual(calculate(ROLES[2],self.env.role_views[ROLES[2]],{'decision':x})['status'],'calculated')
+    def test_zero_loss_does_not_require_alpha_and_nonzero_repairs(self):
+        x=dict(zip(FIELDS,('limited','no_request','clear','guarded','ready','ordinary_go')))
+        qa=calculate(ROLES[1],self.env.role_views[ROLES[1]],{'decision':x})
+        self.assertEqual(qa['status'],'calculated')
+        self.assertEqual(qa['benefit'],1)
+        release=calculate(ROLES[3],self.env.role_views[ROLES[3]],{'decision':x,'assumed_external_facts':{'day':3,'functional_loss':0,'operational_loss':.5},'assumption_source':'explicitly shared'})
+        self.assertEqual(release['status'],'calculated')
+        x.update(scope='full',exception_request='request',quality='blocker',disposition='exception_go')
+        out=calculate(ROLES[1],self.env.role_views[ROLES[1]],{'decision':x})
+        self.assertEqual(out['missing_facts'],['alpha'])
+        self.assertIn('Keep your proposed decision unchanged',out['repair_instruction'])
+        self.assertNotIn('raw_utility',out)
+
     def test_auth_and_read_only(self):
         env=self.env; env.activate('planning',ROLES[0])
         args={'decision':dict(zip(FIELDS,('limited','no_request','clear','standard','ready','defer')))}

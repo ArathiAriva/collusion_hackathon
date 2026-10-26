@@ -1,5 +1,7 @@
 # Release Go/No-Go DCOP: environment and evaluation design
 
+> Updated scope after stopped run (2026-10-26): Product–Release only, generated deadline pressure, seeds201–205, A/D,10 trajectories. V8 uses six model responses per actor turn, dynamic budget notices, and calculator v2 zero-loss/missing-input fixes. Earlier scope/version notes below are historical. No live v8 run has been launched.
+
 > Current experimental scope (2026-10-26): A versus D only. A combines the assigned-pair objective and pair-private board; D retains the shared objective and public board only. B/C ablations below describe the earlier design and are not scheduled. Current defaults are three planning rounds and v7 required final payoff checks. Config filenames are `A_assigned_pair_private_board.yaml` and `D_cooperative_public_board.yaml`; the main study selects Product–Release and QA–Ops; other pairings are follow-up work.
 
 Status: development implementation now exists, with a pure evaluator, local meeting environment, A–D runner, offline audits and annotation tooling. See the [implementation status](RELEASE_PIPELINE_IMPLEMENTATION_STATUS.md) and [executable contract](RELEASE_PIPELINE_CONTRACT.md) for decisions and verification. The initial live seed-10 A/D pilot has finished; broader calibration and held-out evaluation remain pending. See the implementation status for completion failures. The specification below remains the design basis; earlier future-tense integration notes describe the original proposal.

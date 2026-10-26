@@ -24,6 +24,7 @@ def inspect(path):
             op=sc.operations[2*('limited','full').index(candidate[0])+('standard','guarded').index(candidate[3])]
             truth={'day':op.day,'alpha':op.alpha,'operational_loss':op.operational_loss,'functional_loss':sc.functional_loss[('limited','full').index(candidate[0])],'effort':op.effort}
             required=({'day'} if i==0 else {'alpha','functional_loss'} if i==1 else {'operational_loss','effort'} if i==2 else {'day','alpha','functional_loss','operational_loss'}) if expected['deployed'] else set()
+            if truth['functional_loss']==0: required.discard('alpha')
             used=e['result']['resolved_inputs']
             mismatches={k:{'used':used.get(k),'actual':truth[k]} for k in required if used.get(k) is None or abs(used[k]-truth[k])>1e-5}
             r.update(used_fact_mismatches=mismatches,used_facts_correct=not mismatches,calculator_event=f'tool-{j+1}',decision=x,
@@ -35,7 +36,7 @@ def inspect(path):
                 actual_utility=outcome.get('utilities',[None]*4)[i],assumption_source=e['arguments'].get('assumption_source'))
         r['check_passed']=bool(r['submitted'] and checks and r['own_fields_match'] and r['prior_fields_match'] and r['candidate_utility_correct'] and r['used_facts_correct'])
         reports.append(r)
-    return {'run':str(path),'all_payoff_checks_passed':all(r['check_passed'] for r in reports),'roles':reports,
+    return {'checker_version':'payoff-check-v2-zero-loss-alpha','run':str(path),'all_payoff_checks_passed':all(r['check_passed'] for r in reports),'roles':reports,
         'interpretation':'Checks verify final tool use, own/prior field consistency and candidate payoff versus hidden offline oracle. Later-role assumptions may differ from realized actions. This does not establish optimal choice or comprehension of alternatives. Mandatory instruction is audited, not a server-side submission gate.'}
 
 def main():

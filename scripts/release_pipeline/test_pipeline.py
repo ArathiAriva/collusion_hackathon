@@ -36,13 +36,13 @@ class PipelineTests(unittest.TestCase):
             run.main()
         result=json.loads(output.getvalue())
         self.assertEqual(result['trajectory_count'],1)
-        self.assertEqual(result['max_model_calls'],48)
+        self.assertEqual(result['max_model_calls'],96)
         self.assertEqual(result['planning_rounds'],3)
         self.assertEqual(result['schedule'][0]['run_id'],'s000-p5-A')
 
     def test_balanced_frozen_schedule_and_partition_isolation(self):
         rows=run.schedule(instances=2)
-        self.assertEqual(len(rows),48)
+        self.assertEqual(len(rows),24)
         self.assertEqual(len({r['run_id'] for r in rows}),len(rows))
         for block in {r['block_id'] for r in rows}:
             rr=[r for r in rows if r['block_id']==block]
@@ -66,7 +66,7 @@ class PipelineTests(unittest.TestCase):
             with patch.object(sys,'argv',['run.py','--dry-run','--pilot','--output-root',td]),contextlib.redirect_stdout(output):
                 run.main()
             result=json.loads(output.getvalue())
-            self.assertEqual(result['trajectory_count'],4)
+            self.assertEqual(result['trajectory_count'],2)
             self.assertEqual(result['max_model_calls'],192)
             self.assertEqual(list(Path(td).iterdir()),[])
 
@@ -77,13 +77,13 @@ class PipelineTests(unittest.TestCase):
         card={'llm':{'provider':'openrouter','openrouter':{'model':'openai/gpt-4o-mini','base_url':'https://openrouter.ai/api/v1',
             'params':{'temperature':.7,'max_tokens':1500}}},
             'freeze_id':'test-only-no-live-dispatch','schedule_hash':run.digest(rows),'prompt_version':run.PROMPT_VERSION,
-            'authorized_trajectories':4,'rates':{'input_per_million':.15,'output_per_million':.6,
+            'authorized_trajectories':2,'rates':{'input_per_million':.15,'output_per_million':.6,
                 'source_url':'https://example.invalid/test-fixture','verified_date':'test-fixture'},
             'retry_policy':'no-automatic-trajectory-retry','stopping_rule':'run-frozen-schedule','resource_estimate_usd':1}
         self.assertEqual(run.validate_card(card,rows),card['llm'])
         with self.assertRaises(ValueError):
             run.validate_card(card,run.schedule(pilot=True,planning_rounds=4))
-        for key,value in [('schedule_hash','wrong'),('authorized_trajectories',2),('resource_estimate_usd',float('nan')),('prompt_version','release-prompts-v1')]:
+        for key,value in [('schedule_hash','wrong'),('authorized_trajectories',1),('resource_estimate_usd',float('nan')),('prompt_version','release-prompts-v1')]:
             bad=dict(card,**{key:value})
             with self.assertRaises(ValueError):
                 run.validate_card(bad,rows)
@@ -118,12 +118,12 @@ class PipelineTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 asyncio.run(run.execute(args,rows,None))
 
-    def test_default_study_is_twenty_deadline_pressure_trajectories(self):
+    def test_default_study_is_ten_product_release_deadline_trajectories(self):
         output=io.StringIO()
         with patch.object(sys,'argv',['run.py','--dry-run']),contextlib.redirect_stdout(output):
             run.main()
         plan=json.loads(output.getvalue())
-        self.assertEqual(plan['trajectory_count'],20)
+        self.assertEqual(plan['trajectory_count'],10)
         self.assertEqual(plan['max_parallel_trajectories'],2)
         self.assertEqual(plan['max_model_calls'],960)
         self.assertEqual({r['experiment_seed'] for r in plan['schedule']},{201,202,203,204,205})
@@ -135,8 +135,8 @@ class PipelineTests(unittest.TestCase):
         from types import SimpleNamespace
         seeds=[201,202,203,204,205]
         rows=run.study_schedule(seeds,run.FAMILIES)
-        self.assertEqual(len(rows),120)
-        self.assertEqual(len({r['run_id'] for r in rows}),120)
+        self.assertEqual(len(rows),60)
+        self.assertEqual(len({r['run_id'] for r in rows}),60)
         self.assertEqual({r['experiment_seed'] for r in rows},set(seeds))
         for block in {r['block_id'] for r in rows}:
             rr=[r for r in rows if r['block_id']==block]
@@ -159,7 +159,7 @@ class PipelineTests(unittest.TestCase):
             asyncio.run(run.execute(args,run.schedule(pilot=True),None))
             self.assertEqual(peak,2)
             manifest=json.loads((Path(td)/'parallel/manifest.json').read_text())
-            self.assertEqual(len(manifest['completed']),4)
+            self.assertEqual(len(manifest['completed']),2)
             self.assertEqual(manifest['status'],'complete')
         for bad in ([201,201],[]):
             with self.assertRaises(ValueError): run.study_schedule(bad,run.FAMILIES)

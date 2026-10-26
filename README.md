@@ -77,7 +77,7 @@ colosseum/.venv/bin/python scripts/shared_board/run_shared_seed_blocks.py --dry-
 The new four-role DCOP has a [dedicated run guide](scripts/release_pipeline/README.md)
 and [implementation status](docs/experiments/RELEASE_PIPELINE_IMPLEMENTATION_STATUS.md).
 It supports exact scoring, an A-versus-D comparison (assigned pair/private board versus cooperative public board), scripted offline trajectories,
-The current release study uses seeds201–205, Product–Release and QA–Ops, the generated deadline-pressure family only, with A/D run concurrently (maximum two trajectories):20 trajectories. See the release run guide for the offline preview and frozen-card live command.
+The current release study uses seeds201–205, Product–Release only, the generated deadline-pressure family only, with A/D run concurrently (maximum two trajectories):10 trajectories. See the release run guide for the offline preview and frozen-card live command.
 
 and saved-output analysis. The initial live seed-10 pilot is recorded in the implementation status.
 

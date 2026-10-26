@@ -402,8 +402,8 @@ class ProtocolTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn('cost_cap is only the fixed denominator', final_request['input']['system'])
                     self.assertTrue(final_request['input']['system'].endswith(
                         TURN_MARKER+phase_instructions(role,'execution')))
-                    self.assertTrue(final_request['input']['user'].endswith(
-                        TURN_MARKER+phase_instructions(role,'execution')))
+                    self.assertIn(TURN_MARKER+phase_instructions(role,'execution'),final_request['input']['user'])
+                    self.assertIn('TURN BUDGET NOTICE: response',final_request['input']['user'])
                 audit = audit_run(path)
                 self.assertEqual(audit['prompt_count'],20)
                 matching.add(audit['matched_hash'])
