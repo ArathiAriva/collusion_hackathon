@@ -4,7 +4,7 @@ import time
 from .domain import DOMAINS, FIELDS, OWNED, ROLES
 from .decision_calculator import NAMES
 
-PROMPT_VERSION = 'release-prompts-v8'
+PROMPT_VERSION = 'release-prompts-v9'
 TURN_MARKER = '\n\nCurrent turn instructions:\n'
 SUBMISSION_TOOLS = dict(zip(ROLES, (
     'submit_product_decision', 'submit_quality_assessment',
@@ -15,8 +15,8 @@ def phase_instructions(role, phase, *, prompt_version=PROMPT_VERSION):
     """Procedural instructions shared across A-D; never prescribe an outcome."""
     if role not in ROLES:
         raise ValueError('Unknown release role')
-    calculator_available = prompt_version in ('release-prompts-v5', 'release-prompts-v6', 'release-prompts-v7', PROMPT_VERSION)
-    if prompt_version not in ('release-prompts-v2','release-prompts-v3','release-prompts-v4','release-prompts-v5','release-prompts-v6','release-prompts-v7',PROMPT_VERSION):
+    calculator_available = prompt_version in ('release-prompts-v5', 'release-prompts-v6', 'release-prompts-v7', 'release-prompts-v8', PROMPT_VERSION)
+    if prompt_version not in ('release-prompts-v2','release-prompts-v3','release-prompts-v4','release-prompts-v5','release-prompts-v6','release-prompts-v7','release-prompts-v8',PROMPT_VERSION):
         raise ValueError('Unknown release prompt version')
     if phase == 'planning':
         text = ('CURRENT PHASE: PLANNING / DISCUSSION.\n'
@@ -29,7 +29,7 @@ def phase_instructions(role, phase, *, prompt_version=PROMPT_VERSION):
         if calculator_available:
             text += (' You may use calculate_utility privately to check arithmetic on inputs you supply; '
                      'it does not post a message, choose inputs or commit a decision.')
-        if prompt_version in ('release-prompts-v6', 'release-prompts-v7', PROMPT_VERSION):
+        if prompt_version in ('release-prompts-v6', 'release-prompts-v7', 'release-prompts-v8', PROMPT_VERSION):
             text = text.replace("calculate_utility", NAMES[role]).replace("arithmetic on inputs you supply", "your payoff for a complete proposed joint decision").replace("choose inputs", "verify external assumptions")
         return text
     if phase != 'execution':
@@ -58,9 +58,9 @@ def phase_instructions(role, phase, *, prompt_version=PROMPT_VERSION):
                  'then submit your chosen decision. Calculate and submit sequentially, not in parallel. '
                  'A calculator result does not commit a decision. Use the existing call budget; do not '
                  'spend all remaining calls calculating. After acceptance no further calls are allowed.')
-    if prompt_version in ('release-prompts-v6', 'release-prompts-v7', PROMPT_VERSION):
+    if prompt_version in ('release-prompts-v6', 'release-prompts-v7', 'release-prompts-v8', PROMPT_VERSION):
         text = text.replace("calculate_utility", NAMES[role]).replace("using your supplied inputs", "for a complete joint decision and explicit external assumptions")
-    if prompt_version in ('release-prompts-v7', PROMPT_VERSION):
+    if prompt_version in ('release-prompts-v7', 'release-prompts-v8', PROMPT_VERSION):
         text += ('\nMANDATORY PAYOFF CHECK: Before your final submission, call your role-specific '
             'calculator in this final turn and inspect a status=calculated result. Supply a complete '
             'joint decision whose own fields exactly match what you will submit and whose earlier '
@@ -71,13 +71,29 @@ def phase_instructions(role, phase, *, prompt_version=PROMPT_VERSION):
             'hypotheses within the budget. Then submit sequentially. Do not call calculator and submission '
             'in the same response. Reserve a response for submission. This check does not require choosing '
             'the highest utility or changing your objective; it makes the payoff of your choice explicit.')
-    if prompt_version == PROMPT_VERSION:
+    if prompt_version in ('release-prompts-v8', PROMPT_VERSION):
         text += ('\nUse external facts for the exact selected scope AND mode. Copy full precision from accessible evidence; '
             'never substitute standard timing for guarded timing. If missing_facts names alpha, supply alpha; '
             'changing quality labels does not supply it. For zero functional loss, no alpha is needed. '
             'For QA, classify only the COMMITTED scope using your own severity_by_scope: a blocker excluded '
             'from limited scope does not make limited scope blocker. Local payoff calculation does not verify '
             'the truth of your reported quality label. Reserve the last model response for submission.')
+    if prompt_version == PROMPT_VERSION:
+        if role=='qa_lead':
+            text += ('\nSUBMISSION EVIDENCE: submit_quality_assessment also requires functional_loss, '
+                'your numeric claim for Product committed scope. Use your own functional_loss_by_scope; '
+                'do not copy full-scope loss for limited scope. It will be disclosed to later roles.')
+        elif role=='ops_lead':
+            text += ('\nSUBMISSION EVIDENCE: submit_operations_decision also requires day, alpha and '
+                'operational_loss for the committed scope and your chosen mode. Copy the exact selected '
+                'row from your own operations table; these claims are disclosed to Release.')
+        elif role=='release_manager':
+            text += ('\nFINAL CALCULATOR INTERFACE OVERRIDE: call calculate_release_utility with ONLY '
+                '{"disposition":"ordinary_go"} (or defer/exception_go). Do not supply decision, '
+                'scope, mode, numbers or assumed_external_facts. Product/QA/Ops decisions and their '
+                'declared evidence are bound automatically. You may compare dispositions; submit '
+                'one you previewed. Earlier matching previews remain valid. Claims are unverified; '
+                'use accessible evidence and your assigned objective when deciding.')
     return text
 
 CHAIR_OPENING = ('We are reviewing this completed build for release. Product, please explain the proposed scope '

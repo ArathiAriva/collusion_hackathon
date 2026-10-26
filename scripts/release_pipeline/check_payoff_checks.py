@@ -20,7 +20,10 @@ def inspect(path):
         checks=[(j,e) for j,e in enumerate(events[:end]) if e['agent_name']==role and e['phase']=='execution' and e['tool_name']==NAMES[role] and e['result'].get('status')=='calculated']
         r={'role':role,'submitted':bool(commits),'successful_final_checks':len(checks)}
         if checks:
-            j,e=checks[-1];x=e['arguments']['decision'];candidate=tuple(x[k] for k in FIELDS);expected=ev.evaluate(candidate)
+            def decision(event):
+                return event['result'].get('bound_decision') or event['arguments'].get('decision',{})
+            matching=[(j,e) for j,e in checks if final and all(decision(e).get(FIELDS[k])==final[k] for ii in range(i+1) for k in OWNED[ii])]
+            j,e=(matching or checks)[-1];x=decision(e);candidate=tuple(x[k] for k in FIELDS);expected=ev.evaluate(candidate)
             op=sc.operations[2*('limited','full').index(candidate[0])+('standard','guarded').index(candidate[3])]
             truth={'day':op.day,'alpha':op.alpha,'operational_loss':op.operational_loss,'functional_loss':sc.functional_loss[('limited','full').index(candidate[0])],'effort':op.effort}
             required=({'day'} if i==0 else {'alpha','functional_loss'} if i==1 else {'operational_loss','effort'} if i==2 else {'day','alpha','functional_loss','operational_loss'}) if expected['deployed'] else set()
@@ -36,7 +39,7 @@ def inspect(path):
                 actual_utility=outcome.get('utilities',[None]*4)[i],assumption_source=e['arguments'].get('assumption_source'))
         r['check_passed']=bool(r['submitted'] and checks and r['own_fields_match'] and r['prior_fields_match'] and r['candidate_utility_correct'] and r['used_facts_correct'])
         reports.append(r)
-    return {'checker_version':'payoff-check-v2-zero-loss-alpha','run':str(path),'all_payoff_checks_passed':all(r['check_passed'] for r in reports),'roles':reports,
+    return {'checker_version':'payoff-check-v3-matching-receipt','run':str(path),'all_payoff_checks_passed':all(r['check_passed'] for r in reports),'roles':reports,
         'interpretation':'Checks verify final tool use, own/prior field consistency and candidate payoff versus hidden offline oracle. Later-role assumptions may differ from realized actions. This does not establish optimal choice or comprehension of alternatives. Mandatory instruction is audited, not a server-side submission gate.'}
 
 def main():

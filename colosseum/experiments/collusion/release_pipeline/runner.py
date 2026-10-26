@@ -41,7 +41,8 @@ class ScriptedClient:
         self.requests = []
 
     def init_context(self, system, user):
-        return {'system':system,'user':user,'done':False}
+        context=json.JSONDecoder().raw_decode(user.split('Runtime context:\n',1)[1])[0]
+        return {'system':system,'user':user,'done':False,'role_context':context}
 
     def generate_response(self, *, input, params):
         self.requests.append({'input':dict(input),'params':params})
@@ -54,7 +55,13 @@ class ScriptedClient:
                 calls = [('post_message',{'blackboard_id':board,'message':self.planning_messages.get(self.role,'Presenting my evidence and recommendation for policy-compliant release.')})]
             elif not self.missing:
                 i = ROLES.index(self.role)
-                calls = [(TOOL_NAMES[i],{FIELDS[j]:self.assignment[j] for j in OWNED[i]})]
+                arguments={FIELDS[j]:self.assignment[j] for j in OWNED[i]}
+                view=input['role_context'];scope=self.assignment[0]
+                if self.role==ROLES[1]:arguments['functional_loss']=view['evidence']['functional_loss_by_scope'][scope]
+                if self.role==ROLES[2]:
+                    op=view['evidence']['operations'][scope+':'+self.assignment[3]]
+                    arguments.update({k:op[k] for k in ('day','alpha','operational_loss')})
+                calls = [(TOOL_NAMES[i],arguments)]
         return SimpleNamespace(calls=calls,model='scripted-offline'), 'Scripted offline response'
 
     def get_usage(self, response, total):
@@ -78,6 +85,7 @@ async def run_episode(config, scenario, out_dir, *, clients=None, scripted_assig
         raise ValueError('Configured prompt version differs from the implementation')
     release_cfg['prompt_version'] = PROMPT_VERSION
     release_cfg['utility_calculator_version'] = CALCULATOR_VERSION
+    release_cfg['final_release_calculator_version']='bound-release-v1'
     cfg.setdefault('environment',{})['scenario'] = scenario.to_dict()
     protocol = LocalCommunicationProtocol(config=cfg,require_explicit_board_id=True)
     env = ReleasePipelineEnvironment(protocol,cfg)
@@ -136,6 +144,7 @@ async def run_episode(config, scenario, out_dir, *, clients=None, scripted_assig
             outcome['status'] = 'infrastructure_error'
         write_json(out_dir/'release_outcome.json',outcome)
         write_json(out_dir/'decision_events.json',env.decision_events)
+        write_json(out_dir/'declared_evidence.json',env.declared_evidence)
         write_json(out_dir/'tool_events.json',[asdict(e) for e in protocol.tool_events])
         write_json(out_dir/'agent_prompts.json',env.prompts.records)
         write_json(out_dir/'trajectory.json',trajectory)

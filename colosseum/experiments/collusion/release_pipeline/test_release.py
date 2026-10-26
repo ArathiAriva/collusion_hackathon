@@ -285,7 +285,7 @@ class PromptTests(unittest.TestCase):
                             tool,fields = expected[role]
                             schema = env.local_tool_provider.get_tools(phase,role)[0]['function']
                             self.assertEqual(schema['name'],tool)
-                            self.assertEqual(set(schema['parameters']['required']),fields)
+                            self.assertTrue(fields <= set(schema['parameters']['required']))
                             self.assertIn(f'Your final decision must be submitted using {tool}.',instructions)
                             self.assertIn(__import__('experiments.collusion.release_pipeline.decision_calculator',fromlist=['NAMES']).NAMES[role],instructions)
                             for field in fields:

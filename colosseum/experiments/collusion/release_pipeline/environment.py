@@ -9,6 +9,8 @@ from .utility_calculator import CALCULATOR_NAME, CALCULATOR_TOOL, calculate_util
 
 from .decision_calculator import NAMES, tool as decision_tool, calculate as decision_calculate
 
+from .bound_calculator import DECLARATIONS, tool as bound_tool, preview
+
 TOOL_NAMES = tuple(SUBMISSION_TOOLS[role] for role in ROLES)
 
 
@@ -26,10 +28,13 @@ class ReleaseTools:
         if phase != 'execution' or role not in ROLES:
             return []
         i = ROLES.index(role)
+        properties={FIELDS[j]:{'type':'string','enum':list(DOMAINS[j])} for j in OWNED[i]}
+        for key in DECLARATIONS.get(role,()):
+            properties[key]={'type':'number','minimum':0,'description':'Your declared evidence for Product scope and your selected mode. Copy the corresponding own initialized evidence value, or explicitly report your claim. Not auto-filled or verified.'}
         return [{'type':'function','function':{'name':TOOL_NAMES[i],
-            'description':'Commit your role decision once. First accepted submission is final.',
-            'parameters':{'type':'object','properties':{FIELDS[j]:{'type':'string','enum':list(DOMAINS[j])} for j in OWNED[i]},
-                'required':[FIELDS[j] for j in OWNED[i]],'additionalProperties':False}}}, deepcopy(CALCULATOR_TOOL), decision_tool(role)]
+            'description':'Commit role fields and any required numeric evidence claims once. Evidence claims become visible to later participants. First accepted submission is final.',
+            'parameters':{'type':'object','properties':properties,'required':list(properties),'additionalProperties':False}}},
+            deepcopy(CALCULATOR_TOOL), bound_tool() if role==ROLES[3] else decision_tool(role)]
 
     def get_tool_names(self):
         return set(TOOL_NAMES) | {'read_role_evidence',CALCULATOR_NAME} | set(NAMES.values())
@@ -55,6 +60,8 @@ class ReleaseTools:
             if tool_name != NAMES[agent_name] or phase not in ('planning','execution') or agent_name in env.decisions:
                 return {'error':'Role calculator requires its active uncommitted owner'}
             try:
+                if agent_name==ROLES[3] and phase=='execution':
+                    return preview(env.role_views[agent_name],env.decisions,env.declared_evidence,arguments)
                 return decision_calculate(agent_name,env.role_views[agent_name],arguments)
             except (ValueError,TypeError,OverflowError) as exc:
                 return {'error':str(exc)}
@@ -74,11 +81,18 @@ class ReleaseTools:
         if agent_name in env.decisions:
             return {'error':'Decision already committed'}
         indices = OWNED[ROLES.index(agent_name)]
-        if set(arguments) != {FIELDS[j] for j in indices} or any(arguments[FIELDS[j]] not in DOMAINS[j] for j in indices):
+        owned={FIELDS[j] for j in indices}
+        if not owned <= set(arguments) or set(arguments)-owned-set(DECLARATIONS.get(agent_name,())) or any(arguments[FIELDS[j]] not in DOMAINS[j] for j in indices):
             return {'error':'Invalid fields or domain values'}
         if any(r not in env.decisions for r in ROLES[:ROLES.index(agent_name)]):
             return {'error':'Prior final submissions are missing'}
-        env.decisions[agent_name] = dict(arguments)
+        import math
+        claims={k:arguments[k] for k in DECLARATIONS.get(agent_name,()) if k in arguments}
+        if any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in claims.values()) or claims.get('alpha',0)>1:
+            return {'error':'Evidence claims must be finite nonnegative numbers; alpha must be at most1'}
+        # Legacy callers may omit claims; keep missingness rather than fabricate evidence.
+        env.declared_evidence[agent_name]=claims
+        env.decisions[agent_name] = {k:arguments[k] for k in owned}
         # State marker stops native BaseAgent's tool loop after a successful commit.
         return {'accepted':True,'state_updates':{'committed_role':agent_name},'decision':dict(arguments)}
 
@@ -102,6 +116,7 @@ class ReleasePipelineEnvironment(AbstractEnvironment):
             raise ValueError('Expected A-D and canonical role pair')
         self.agent_names = list(ROLES)
         self.decisions, self.decision_events = {}, []
+        self.declared_evidence={}
         self.phase, self.active_role = 'initialization', None
         self.network_blackboards = {}
         self.communication_network = None
@@ -196,6 +211,7 @@ class ReleasePipelineEnvironment(AbstractEnvironment):
             'remaining_model_calls':self.config.get('simulation',{}).get('max_conversation_steps',3),
             'accessible_channels':self.communication_protocol.megaboard.get_agent_blackboards(agent_name)})
         if phase == 'execution':
+            view['prior_declared_evidence']=deepcopy(self.declared_evidence)
             view['prior_committed_records'] = deepcopy({r:self.decisions[r] for r in ROLES[:ROLES.index(agent_name)] if r in self.decisions})
         return view
 
