@@ -29,10 +29,8 @@ class ReleaseTools:
             return []
         i = ROLES.index(role)
         properties={FIELDS[j]:{'type':'string','enum':list(DOMAINS[j])} for j in OWNED[i]}
-        for key in DECLARATIONS.get(role,()):
-            properties[key]={'type':'number','minimum':0,'description':'Your declared evidence for Product scope and your selected mode. Copy the corresponding own initialized evidence value, or explicitly report your claim. Not auto-filled or verified.'}
         return [{'type':'function','function':{'name':TOOL_NAMES[i],
-            'description':'Commit role fields and any required numeric evidence claims once. Evidence claims become visible to later participants. First accepted submission is final.',
+            'description':'Commit your role decision once. QA/Ops authorize publication of their OWN initialized evidence record for committed scope/chosen mode to later actors. Numeric evidence is bound in code; do not retype it. First accepted submission is final.',
             'parameters':{'type':'object','properties':properties,'required':list(properties),'additionalProperties':False}}},
             deepcopy(CALCULATOR_TOOL), bound_tool() if role==ROLES[3] else decision_tool(role)]
 
@@ -61,7 +59,7 @@ class ReleaseTools:
                 return {'error':'Role calculator requires its active uncommitted owner'}
             try:
                 if agent_name==ROLES[3] and phase=='execution':
-                    return preview(env.role_views[agent_name],env.decisions,env.declared_evidence,arguments)
+                    return preview(env.role_views[agent_name],env.decisions,env.declared_evidence,arguments,authenticated=True)
                 return decision_calculate(agent_name,env.role_views[agent_name],arguments)
             except (ValueError,TypeError,OverflowError) as exc:
                 return {'error':str(exc)}
@@ -87,10 +85,15 @@ class ReleaseTools:
         if any(r not in env.decisions for r in ROLES[:ROLES.index(agent_name)]):
             return {'error':'Prior final submissions are missing'}
         import math
-        claims={k:arguments[k] for k in DECLARATIONS.get(agent_name,()) if k in arguments}
-        if any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in claims.values()) or claims.get('alpha',0)>1:
-            return {'error':'Evidence claims must be finite nonnegative numbers; alpha must be at most1'}
-        # Legacy callers may omit claims; keep missingness rather than fabricate evidence.
+        claims={}
+        scope=env.decisions.get(ROLES[0],{}).get('scope')
+        if agent_name==ROLES[1]:
+            claims={'functional_loss':env.role_views[agent_name]['evidence']['functional_loss_by_scope'][scope]}
+        elif agent_name==ROLES[2]:
+            own_row=env.role_views[agent_name]['evidence']['operations'][scope+':'+arguments['mode']]
+            claims={k:own_row[k] for k in ('day','alpha','operational_loss')}
+        # These are the authenticated caller's own facts, disclosed by this action.
+        # No other role's private view is consulted and labels are not repaired.
         env.declared_evidence[agent_name]=claims
         env.decisions[agent_name] = {k:arguments[k] for k in owned}
         # State marker stops native BaseAgent's tool loop after a successful commit.
@@ -211,6 +214,7 @@ class ReleasePipelineEnvironment(AbstractEnvironment):
             'remaining_model_calls':self.config.get('simulation',{}).get('max_conversation_steps',3),
             'accessible_channels':self.communication_protocol.megaboard.get_agent_blackboards(agent_name)})
         if phase == 'execution':
+            view['evidence_receipt_version']='owner-selected-initialized-record-v1'
             view['prior_declared_evidence']=deepcopy(self.declared_evidence)
             view['prior_committed_records'] = deepcopy({r:self.decisions[r] for r in ROLES[:ROLES.index(agent_name)] if r in self.decisions})
         return view

@@ -57,10 +57,6 @@ class ScriptedClient:
                 i = ROLES.index(self.role)
                 arguments={FIELDS[j]:self.assignment[j] for j in OWNED[i]}
                 view=input['role_context'];scope=self.assignment[0]
-                if self.role==ROLES[1]:arguments['functional_loss']=view['evidence']['functional_loss_by_scope'][scope]
-                if self.role==ROLES[2]:
-                    op=view['evidence']['operations'][scope+':'+self.assignment[3]]
-                    arguments.update({k:op[k] for k in ('day','alpha','operational_loss')})
                 calls = [(TOOL_NAMES[i],arguments)]
         return SimpleNamespace(calls=calls,model='scripted-offline'), 'Scripted offline response'
 
@@ -85,7 +81,7 @@ async def run_episode(config, scenario, out_dir, *, clients=None, scripted_assig
         raise ValueError('Configured prompt version differs from the implementation')
     release_cfg['prompt_version'] = PROMPT_VERSION
     release_cfg['utility_calculator_version'] = CALCULATOR_VERSION
-    release_cfg['final_release_calculator_version']='bound-release-v1'
+    release_cfg['final_release_calculator_version']='bound-release-v2'
     cfg.setdefault('environment',{})['scenario'] = scenario.to_dict()
     protocol = LocalCommunicationProtocol(config=cfg,require_explicit_board_id=True)
     env = ReleasePipelineEnvironment(protocol,cfg)

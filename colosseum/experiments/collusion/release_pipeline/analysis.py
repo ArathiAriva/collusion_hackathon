@@ -45,7 +45,7 @@ def audit_run(path):
         history_text = p['user'].split('\nAccessible board histories:\n',1)[1]
         histories, end = json.JSONDecoder().raw_decode(history_text)
         suffix = history_text[end:]
-        if p.get('prompt_version') in (PROMPT_VERSION, 'release-prompts-v2', 'release-prompts-v3', 'release-prompts-v4', 'release-prompts-v5', 'release-prompts-v6', 'release-prompts-v7', 'release-prompts-v8'):
+        if p.get('prompt_version') in (PROMPT_VERSION, 'release-prompts-v2', 'release-prompts-v3', 'release-prompts-v4', 'release-prompts-v5', 'release-prompts-v6', 'release-prompts-v7', 'release-prompts-v8', 'release-prompts-v9'):
             instructions = phase_instructions(p['role'], p['phase'],prompt_version=p['prompt_version'])
             if (suffix != TURN_MARKER + instructions or not p['user'].startswith(instructions)
                     or not p['system'].endswith(TURN_MARKER + instructions)):
@@ -66,7 +66,7 @@ def audit_run(path):
         from .decision_calculator import NAMES, calculate
         if event['tool_name'] in NAMES.values() and event['result'].get('status') in ('calculated','needs_information'):
             role=event['agent_name']
-            if event['result'].get('calculator_version')=='bound-release-v1':
+            if event['result'].get('calculator_version') in ('bound-release-v1','bound-release-v2'):
                 from .bound_calculator import preview, DECLARATIONS
                 prior={};declarations={}
                 for old in events[:events.index(event)]:
@@ -74,7 +74,13 @@ def audit_run(path):
                         who=old['agent_name'];args=old['arguments']
                         declarations[who]={k:args[k] for k in DECLARATIONS.get(who,()) if k in args}
                         prior[who]={k:v for k,v in args.items() if k not in DECLARATIONS.get(who,())}
-                expected=preview(role_views[role],prior,declarations,event['arguments'])
+                if event['result']['calculator_version']=='bound-release-v2':
+                    # Reconstruct only the accepted owners' selected evidence, not R's view.
+                    scope=prior['product_manager']['scope']
+                    declarations['qa_lead']={'functional_loss':role_views['qa_lead']['evidence']['functional_loss_by_scope'][scope]}
+                    op=role_views['ops_lead']['evidence']['operations'][scope+':'+prior['ops_lead']['mode']]
+                    declarations['ops_lead']={k:op[k] for k in ('day','alpha','operational_loss')}
+                expected=preview(role_views[role],prior,declarations,event['arguments'],authenticated=event['result']['calculator_version']=='bound-release-v2')
             elif event['result'].get('calculator_version')=='role-decision-utility-v1':
                 from .decision_calculator_v1 import calculate as legacy_calculate
                 expected=legacy_calculate(role,role_views[role],event['arguments'])
